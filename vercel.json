@@ -4,8 +4,5 @@
       "path": "/api/cron",
       "schedule": "0 3 * * *"
     }
-  ],
-  "env": {
-    "CRON_BASE_URL": "https://ainote.lionnguyen.com"
-  }
+  ]
 }
