@@ -30,7 +30,7 @@ export default function RootLayout({
             {children}
             <ToastContainer
               position="bottom-right"
-              autoClose={3000}
+              autoClose={2000}
               hideProgressBar={false}
               newestOnTop={false}
               closeOnClick
@@ -41,7 +41,6 @@ export default function RootLayout({
               theme="dark"
               toastClassName="!bg-card !text-card-foreground !border !border-border !shadow-lg"
               bodyClassName="text-sm"
-              progressClassName="!bg-primary"
             />
           </ThemeProvider>
         </body>

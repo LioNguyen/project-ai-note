@@ -1,20 +1,18 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import ReactMarkdown from "react-markdown";
+import { toast } from "react-toastify";
+
 import {
   CreateNoteSchema,
   createNoteSchema,
 } from "@/app/(backend)/api/core/utils/validation/note";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Note } from "@prisma/client";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
-import ReactMarkdown from "react-markdown";
-import { Pencil } from "lucide-react";
-
-import { createAxios } from "@/app/(frontend)/core/utils/api";
-import BaseSheet from "@/app/(frontend)/core/components/molecules/BaseSheet/BaseSheet";
+import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
 import {
   Form,
   FormControl,
@@ -25,11 +23,12 @@ import {
 } from "@/app/(frontend)/core/components/atoms/Form/Form";
 import { Input } from "@/app/(frontend)/core/components/atoms/Input/Input";
 import LoadingButton from "@/app/(frontend)/core/components/atoms/LoadingButton/LoadingButton";
-import { Textarea } from "@/app/(frontend)/core/components/atoms/Textarea/Textarea";
-import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
 import { Skeleton } from "@/app/(frontend)/core/components/atoms/Skeleton/Skeleton";
+import { Textarea } from "@/app/(frontend)/core/components/atoms/Textarea/Textarea";
+import BaseSheet from "@/app/(frontend)/core/components/molecules/BaseSheet/BaseSheet";
 import { locales } from "@/app/(frontend)/core/i18n";
 import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { createAxios } from "@/app/(frontend)/core/utils/api";
 import { useNoteDialogStore } from "../../../stores/useNoteDialogStore";
 
 export default function AddEditNoteDialog() {

@@ -98,8 +98,7 @@ src/
 │   │   │   │   │   ├── molecules/
 │   │   │   │   │   │   ├── AddEditNoteDialog/
 │   │   │   │   │   │   ├── ChatMessage/
-│   │   │   │   │   │   ├── NoteCardSkeleton/
-│   │   │   │   │   │   └── NotesSearchControls/
+│   │   │   │   │   │   └── NoteCardSkeleton/
 │   │   │   │   │   └── organisms/
 │   │   │   │   │       ├── AIChatBox/
 │   │   │   │   │       ├── Note/
@@ -139,6 +138,7 @@ src/
 │   │       │   │   ├── SearchBox/
 │   │       │   │   └── ThemeToggleButton/
 │   │       │   └── organisms/  # Complex UI sections
+│   │       │       ├── DataGrid/        # Reusable data grid
 │   │       │       └── NavBar/
 │   │       ├── i18n/           # Internationalization (EN/VI)
 │   │       │   ├── index.ts    # Locale exports
@@ -162,13 +162,6 @@ src/
 ├── middleware.ts               # Next.js middleware (auth routing)
 └── prisma/
     └── schema.prisma           # Database schema
-
-scripts/                        # Utility scripts
-├── check-notes.ts              # Verify note data
-├── create-random-notes.ts      # Generate test data
-├── reset-vietnamese-notes.ts   # Reset Vietnamese content
-├── sync-pinecone.ts            # Sync notes to vector DB
-└── update-user-id.ts           # Update user IDs
 ```
 
 ### Architecture Principles

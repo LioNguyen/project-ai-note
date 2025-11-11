@@ -138,8 +138,7 @@ src/app/
 │   │   │   │   ├── molecules/
 │   │   │   │   │   ├── AddEditNoteDialog/
 │   │   │   │   │   ├── ChatMessage/
-│   │   │   │   │   ├── NoteCardSkeleton/
-│   │   │   │   │   └── NotesSearchControls/
+│   │   │   │   │   └── NoteCardSkeleton/
 │   │   │   │   └── organisms/
 │   │   │   │       ├── AIChatBox/
 │   │   │   │       ├── Note/
@@ -177,6 +176,7 @@ src/app/
 │       │   │   ├── SearchBox/
 │       │   │   └── ThemeToggleButton/
 │       │   └── organisms/
+│       │       ├── DataGrid/          # Generic data grid
 │       │       └── NavBar/
 │       ├── i18n/              # Internationalization
 │       │   ├── index.ts
