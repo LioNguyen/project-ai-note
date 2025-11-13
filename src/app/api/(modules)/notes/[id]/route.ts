@@ -1,8 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 
-import { notesIndex } from "@/app/(backend)/api/core/utils/db/pinecone";
-import prisma from "@/app/(backend)/api/core/utils/db/prisma";
-import { deleteNoteSchema } from "@/app/(backend)/api/core/utils/validation/note";
+import { notesIndex } from "@/app/api/core/utils/db/pinecone";
+import prisma from "@/app/api/core/utils/db/prisma";
+import { deleteNoteSchema } from "@/app/api/core/utils/validation/note";
 
 export async function DELETE(
   _: Request,

@@ -1,4 +1,4 @@
-import { notesIndex } from "@/app/(backend)/api/core/utils/db/pinecone";
+import { notesIndex } from "@/app/api/core/utils/db/pinecone";
 
 /**
  * Service to ping Pinecone index and verify it's accessible

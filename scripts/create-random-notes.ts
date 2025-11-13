@@ -3,9 +3,9 @@
  * Run: bun run scripts/create-random-notes.ts
  */
 
-import { notesIndex } from "../src/app/(backend)/api/core/utils/db/pinecone";
-import prisma from "../src/app/(backend)/api/core/utils/db/prisma";
-import { getEmbedding } from "../src/app/(backend)/api/core/utils/openai";
+import { notesIndex } from "../src/app/api/core/utils/db/pinecone";
+import prisma from "../src/app/api/core/utils/db/prisma";
+import { getEmbedding } from "../src/app/api/core/utils/openai";
 
 // Sample data for random note generation
 const noteTitles = [

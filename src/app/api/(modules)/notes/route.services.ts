@@ -1,6 +1,6 @@
-import { notesIndex } from "@/app/(backend)/api/core/utils/db/pinecone";
-import prisma from "@/app/(backend)/api/core/utils/db/prisma";
-import { getEmbeddingForNote } from "@/app/(backend)/api/core/utils/embedding";
+import { notesIndex } from "@/app/api/core/utils/db/pinecone";
+import prisma from "@/app/api/core/utils/db/prisma";
+import { getEmbeddingForNote } from "@/app/api/core/utils/embedding";
 
 import {
   CreateNoteRequest,

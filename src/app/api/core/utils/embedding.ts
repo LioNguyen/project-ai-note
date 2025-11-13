@@ -1,4 +1,4 @@
-import { getEmbedding } from "@/app/(backend)/api/core/utils/openai";
+import { getEmbedding } from "@/app/api/core/utils/openai";
 
 /**
  * Generate embedding vector for note content

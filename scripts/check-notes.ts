@@ -3,7 +3,7 @@
  * Run: bun run scripts/check-notes.ts
  */
 
-import prisma from "../src/app/(backend)/api/core/utils/db/prisma";
+import prisma from "../src/app/api/core/utils/db/prisma";
 
 async function checkNotes() {
   try {

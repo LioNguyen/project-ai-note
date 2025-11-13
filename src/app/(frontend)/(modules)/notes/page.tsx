@@ -1,8 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { Metadata } from "next";
 
-import { searchNotes } from "@/app/(backend)/api/notes/search/route.services";
-import { NoteSortBy } from "@/app/(backend)/api/notes/search/route.types";
+import { searchNotes } from "@/app/api/(modules)/notes/search/route.services";
+import { NoteSortBy } from "@/app/api/(modules)/notes/search/route.types";
 import AddEditNoteDialog from "./components/molecules/AddEditNoteDialog/AddEditNoteDialog";
 import AIChatBox from "./components/organisms/AIChatBox/AIChatBox";
 import NotesGrid from "./components/organisms/NotesGrid/NotesGrid";

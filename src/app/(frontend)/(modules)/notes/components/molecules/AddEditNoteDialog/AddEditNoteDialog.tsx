@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import {
   CreateNoteSchema,
   createNoteSchema,
-} from "@/app/(backend)/api/core/utils/validation/note";
+} from "@/app/api/core/utils/validation/note";
 import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
 import {
   Form,

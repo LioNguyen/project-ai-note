@@ -1,5 +1,5 @@
-import prisma from "@/app/(backend)/api/core/utils/db/prisma";
-import { containsSearch } from "@/app/(backend)/api/core/utils/string";
+import prisma from "@/app/api/core/utils/db/prisma";
+import { containsSearch } from "@/app/api/core/utils/string";
 
 import { SearchNotesParams, SearchNotesResponse } from "./route.types";
 

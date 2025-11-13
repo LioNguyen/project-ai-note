@@ -3,7 +3,7 @@
  * Run: bun run scripts/update-user-id.ts
  */
 
-import prisma from "../src/app/(backend)/api/core/utils/db/prisma";
+import prisma from "../src/app/api/core/utils/db/prisma";
 
 const NEW_USER_ID = "user_2bX1QoJf9o1rtg3SVchU1UjVLTK";
 

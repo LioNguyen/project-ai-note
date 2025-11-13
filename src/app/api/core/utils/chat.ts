@@ -3,9 +3,9 @@ import {
   GeminiMessage,
   NoteOverview,
   RelevantNote,
-} from "@/app/(backend)/api/chat/route.types";
-import { notesIndex } from "@/app/(backend)/api/core/utils/db/pinecone";
-import prisma from "@/app/(backend)/api/core/utils/db/prisma";
+} from "@/app/api/(modules)/chat/route.types";
+import { notesIndex } from "@/app/api/core/utils/db/pinecone";
+import prisma from "@/app/api/core/utils/db/prisma";
 
 /**
  * Convert chat messages to Gemini format

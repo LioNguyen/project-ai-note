@@ -1,17 +1,15 @@
 import { GenerativeModel } from "@google/generative-ai";
 
-import { notesIndex } from "@/app/(backend)/api/core/utils/db/pinecone";
-import prisma from "@/app/(backend)/api/core/utils/db/prisma";
-import getGeminiClient, {
-  getEmbedding,
-} from "@/app/(backend)/api/core/utils/openai";
+import { notesIndex } from "@/app/api/core/utils/db/pinecone";
+import prisma from "@/app/api/core/utils/db/prisma";
+import getGeminiClient, { getEmbedding } from "@/app/api/core/utils/openai";
 import {
   convertToGeminiFormat,
   sanitizeChatHistory,
   getNoteOverview,
   getRelevantNotes,
   buildSystemPrompt,
-} from "@/app/(backend)/api/core/utils/chat";
+} from "@/app/api/core/utils/chat";
 
 import {
   ChatMessage,

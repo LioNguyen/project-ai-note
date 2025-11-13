@@ -5,7 +5,6 @@ const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
   "/sign-up(.*)",
-  "/api/cron", // Allow cron job to run without authentication
   "/api/pinecone-ping", // Allow cron job to run without authentication
 ]);
 

@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import {
   createNoteSchema,
   updateNoteSchema,
-} from "@/app/(backend)/api/core/utils/validation/note";
+} from "@/app/api/core/utils/validation/note";
 
 import { createNote, getAllNotes, updateNote } from "./route.services";
 
