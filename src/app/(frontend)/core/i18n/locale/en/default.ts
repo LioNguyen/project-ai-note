@@ -168,6 +168,39 @@ const defaultTranslations = {
     editMode: "Edit Mode",
   },
 
+  // Trial Mode
+  trial: {
+    trialMode: "Trial Mode",
+    notesRemaining: "notes remaining",
+    chatsRemaining: "chats remaining",
+    noteLimitReached: "Note limit reached!",
+    chatLimitReached: "Chat limit reached!",
+    signUpForUnlimited: "Sign up for unlimited notes!",
+    signUp: "Sign Up",
+    unlockUnlimited: "Sign in to unlock unlimited features",
+    benefits: "Benefits:",
+    benefitUnlimitedNotes: "Unlimited notes",
+    benefitUnlimitedChat: "Unlimited AI chat",
+    benefitPermanentStorage: "Permanent storage",
+    benefitAiSearch: "AI-powered search & chat",
+    benefitSecure: "Secure & private",
+    limitReachedTitle: "Trial Limit Reached! 🎯",
+    limitReachedDescription:
+      "You've created 5 notes in trial mode. Sign up to unlock unlimited notes and premium features!",
+    premiumFeatures: "Premium Features:",
+    maybeLater: "Maybe Later",
+    signUpFree: "Sign Up for Free",
+  },
+
+  // Dialog
+  dialog: {
+    unsavedChangesTitle: "Unsaved Changes",
+    unsavedChangesDescription:
+      "You have unsaved changes. Are you sure you want to leave?",
+    continueEditing: "Continue Editing",
+    discardChanges: "Discard Changes",
+  },
+
   // Chat
   chat: {
     title: "AI Chat",
@@ -178,6 +211,9 @@ const defaultTranslations = {
     clearChat: "Clear chat",
     newChat: "New chat",
     askQuestion: "Ask the AI a question about your notes",
+    limitReached: "Chat limit reached",
+    upgradeMessage: "Chat limit reached. Sign up to continue.",
+    remainingChats: "chats remaining",
   },
 } as const;
 

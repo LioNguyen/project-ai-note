@@ -167,6 +167,39 @@ const defaultTranslations = {
     editMode: "Chế độ chỉnh sửa",
   },
 
+  // Trial Mode
+  trial: {
+    trialMode: "Chế Độ Dùng Thử",
+    notesRemaining: "ghi chú còn lại",
+    chatsRemaining: "lượt chat còn lại",
+    noteLimitReached: "Đã hết lượt tạo ghi chú!",
+    chatLimitReached: "Đã hết lượt chat!",
+    signUpForUnlimited: "Đăng ký để sử dụng không giới hạn!",
+    signUp: "Đăng Ký",
+    unlockUnlimited: "Đăng nhập để mở khóa tính năng unlimited",
+    benefits: "Lợi ích khi đăng ký:",
+    benefitUnlimitedNotes: "Tạo không giới hạn ghi chú",
+    benefitUnlimitedChat: "Chat không giới hạn với AI",
+    benefitPermanentStorage: "Lưu trữ vĩnh viễn",
+    benefitAiSearch: "Tìm kiếm & chat với AI",
+    benefitSecure: "Bảo mật & riêng tư",
+    limitReachedTitle: "Đã hết lượt dùng thử! 🎯",
+    limitReachedDescription:
+      "Bạn đã tạo 5 ghi chú ở chế độ dùng thử. Đăng ký để mở khóa không giới hạn ghi chú và tính năng cao cấp!",
+    premiumFeatures: "Tính năng cao cấp:",
+    maybeLater: "Để sau",
+    signUpFree: "Đăng ký miễn phí",
+  },
+
+  // Dialog
+  dialog: {
+    unsavedChangesTitle: "Có thay đổi chưa lưu",
+    unsavedChangesDescription:
+      "Bạn có thay đổi chưa được lưu. Bạn có chắc chắn muốn thoát không?",
+    continueEditing: "Tiếp tục chỉnh sửa",
+    discardChanges: "Bỏ thay đổi",
+  },
+
   // Chat
   chat: {
     title: "Trò chuyện AI",
@@ -177,6 +210,9 @@ const defaultTranslations = {
     clearChat: "Xóa trò chuyện",
     newChat: "Trò chuyện mới",
     askQuestion: "Hỏi AI về ghi chú của bạn",
+    limitReached: "Đã hết lượt chat",
+    upgradeMessage: "Đã hết lượt chat. Đăng ký để tiếp tục.",
+    remainingChats: "lượt chat còn lại",
   },
 } as const;
 

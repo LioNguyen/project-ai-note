@@ -24,10 +24,11 @@ interface BaseSheetProps {
 }
 
 /**
- * BaseSheet component with floating style
+ * BaseSheet component
  * Features:
- * - Spacing from screen edges (right, top, bottom)
- * - Border radius for a floating appearance
+ * - Full height from navbar bottom to screen bottom
+ * - No border radius
+ * - Flush with right and bottom edges
  * - Customizable side positioning
  */
 export default function BaseSheet({
@@ -45,29 +46,30 @@ export default function BaseSheet({
       <SheetContent
         side={side}
         className={cn(
-          // Floating style with spacing from edges
-          "m-4 flex h-[calc(100vh-2rem)] flex-col rounded-lg border shadow-xl",
+          // Full height touching bottom, positioned below navbar
+          "flex h-[calc(100vh-73px)] flex-col border-l shadow-xl",
+          "bottom-0 top-[73px]",
           // Width adjustments based on side
-          side === "right" && "w-[calc(100%-2rem)] sm:max-w-[500px]",
-          side === "left" && "w-[calc(100%-2rem)] sm:max-w-[500px]",
-          side === "top" && "h-[calc(50vh-2rem)]",
-          side === "bottom" && "h-[calc(50vh-2rem)]",
+          side === "right" && "w-full sm:max-w-[500px]",
+          side === "left" && "w-full sm:max-w-[500px]",
+          side === "top" && "h-[calc(50vh)]",
+          side === "bottom" && "h-[calc(50vh)]",
           className,
         )}
       >
         {title && (
-          <SheetHeader className="flex-shrink-0 border-b pb-0">
+          <SheetHeader className="flex-shrink-0 bg-muted/50 px-6 py-4">
             <SheetTitle>{title}</SheetTitle>
             {description && <SheetDescription>{description}</SheetDescription>}
           </SheetHeader>
         )}
 
-        <div className="scrollbar-clean flex-1 overflow-y-auto py-0">
+        <div className="scrollbar-clean flex-1 overflow-y-auto px-6 py-0">
           {children}
         </div>
 
         {footer && (
-          <SheetFooter className="flex-shrink-0 border-t pt-4">
+          <SheetFooter className="flex-shrink-0 bg-none px-6 py-4">
             {footer}
           </SheetFooter>
         )}

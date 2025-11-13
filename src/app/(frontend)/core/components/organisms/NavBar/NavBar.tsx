@@ -1,7 +1,7 @@
 "use client";
 
-import { signOut, useSession } from "next-auth/react";
-import { Plus, LogOut, User } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { Plus, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -12,14 +12,8 @@ import ThemeToggleButton from "@/app/(frontend)/core/components/molecules/ThemeT
 import { locales } from "@/app/(frontend)/core/i18n";
 import { useNoteDialogStore } from "@/app/(frontend)/(modules)/notes/stores/useNoteDialogStore";
 import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useUserMenuStore } from "@/app/(frontend)/core/store/useUserMenuStore";
 import logo from "@/app/shared/assets/logo.png";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/app/(frontend)/core/components/atoms/Sheet/Sheet";
 
 /**
  * Navigation Bar Component
@@ -29,6 +23,7 @@ export default function NavBar() {
   const pathname = usePathname();
   const locale = useLocale();
   const openDialog = useNoteDialogStore((state) => state.openDialog);
+  const openUserMenu = useUserMenuStore((state) => state.openMenu);
   const { data: session } = useSession();
 
   // Get translations for current locale
@@ -38,10 +33,6 @@ export default function NavBar() {
     if (pathname?.startsWith("/notes")) {
       openDialog();
     }
-  };
-
-  const handleSignOut = async () => {
-    await signOut({ callbackUrl: "/" });
   };
 
   return (
@@ -61,66 +52,35 @@ export default function NavBar() {
           <LanguageSwitcher />
           <ThemeToggleButton />
 
-          {/* User Profile Sheet */}
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-full"
-              >
-                {session?.user?.image ? (
-                  <Image
-                    src={session.user.image}
-                    alt={session.user.name || "User"}
-                    width={32}
-                    height={32}
-                    className="rounded-full"
-                  />
-                ) : (
-                  <User className="h-5 w-5" />
-                )}
-              </Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>Account</SheetTitle>
-              </SheetHeader>
-              <div className="mt-6 space-y-4">
-                <div className="flex items-center gap-3">
-                  {session?.user?.image ? (
-                    <Image
-                      src={session.user.image}
-                      alt={session.user.name || "User"}
-                      width={48}
-                      height={48}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary">
-                      <User className="h-6 w-6 text-primary-foreground" />
-                    </div>
-                  )}
-                  <div>
-                    <p className="font-medium">
-                      {session?.user?.name || "User"}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {session?.user?.email}
-                    </p>
-                  </div>
+          {/* User Menu Trigger - Opens sheet via Zustand */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-full"
+            onClick={openUserMenu}
+          >
+            {session?.user ? (
+              // Authenticated User Avatar
+              session.user.image ? (
+                <Image
+                  src={session.user.image}
+                  alt={session.user.name || "User"}
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
+              ) : (
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
+                  <User className="h-4 w-4 text-primary-foreground" />
                 </div>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start"
-                  onClick={handleSignOut}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
-                </Button>
+              )
+            ) : (
+              // Trial Mode Avatar
+              <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-primary">
+                <User className="h-4 w-4 text-primary" />
               </div>
-            </SheetContent>
-          </Sheet>
+            )}
+          </Button>
         </div>
       </div>
     </div>

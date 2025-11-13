@@ -1,23 +1,41 @@
-import { requireAuth } from "@/app/api/core/utils/auth";
+import { getOptionalUserId } from "@/app/api/core/utils/auth";
 
-import { processChatRequest } from "./route.services";
+import { processChatRequest, processChatRequestTrial } from "./route.services";
 import { ChatRequest } from "./route.types";
 
 /**
  * POST /api/chat
  * Process chat messages with AI assistant using note context
+ * Supports both authenticated users and trial mode
  */
 export async function POST(req: Request) {
   try {
     const body: ChatRequest = await req.json();
-    const { messages } = body;
+    const { messages, trialNotes } = body;
 
-    const userId = await requireAuth();
+    const userId = await getOptionalUserId();
 
+    // Trial mode - use trial notes from request body
     if (!userId) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
+      if (!trialNotes) {
+        return Response.json(
+          { error: "Trial notes required for trial mode" },
+          { status: 400 },
+        );
+      }
+
+      const stream = await processChatRequestTrial(messages, trialNotes);
+
+      return new Response(stream, {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        },
+      });
     }
 
+    // Authenticated user - fetch notes from database
     const stream = await processChatRequest(userId, messages);
 
     return new Response(stream, {

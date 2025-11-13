@@ -266,3 +266,9 @@ npm run sync-pinecone
 - **Dark Mode**: System-aware theme with manual toggle
 - **Internationalization**: English and Vietnamese language support
 - **Authentication**: Secure user authentication with Clerk
+- **Analytics**: Google Analytics 4 tracking for user behavior insights
+
+## Documentation
+
+- **[Google Analytics Setup](docs/GOOGLE_ANALYTICS_SETUP.md)** - Complete guide for GA4 integration and event tracking
+- **[NextAuth Migration](docs/NEXTAUTH_MIGRATION.md)** - Authentication system migration guide

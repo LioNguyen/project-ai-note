@@ -1,11 +1,11 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "react-toastify";
+
 import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
-import { Input } from "@/app/(frontend)/core/components/atoms/Input/Input";
-import { Label } from "@/app/(frontend)/core/components/atoms/Label/Label";
 import {
   Card,
   CardContent,
@@ -13,7 +13,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/(frontend)/core/components/atoms/Card/Card";
-import { toast } from "react-toastify";
+import { Input } from "@/app/(frontend)/core/components/atoms/Input/Input";
+import { Label } from "@/app/(frontend)/core/components/atoms/Label/Label";
+import { trackSignUp } from "@/app/(frontend)/core/utils/analytics";
 
 /**
  * Sign Up Page Component
@@ -80,6 +82,8 @@ export default function SignUpPage() {
       if (result?.error) {
         toast.error(result.error);
       } else if (result?.ok) {
+        // Track successful sign up
+        trackSignUp("email");
         router.push("/notes");
         router.refresh();
       }
@@ -97,6 +101,8 @@ export default function SignUpPage() {
   const handleGoogleSignUp = async () => {
     setIsLoading(true);
     try {
+      // Track Google sign up (tracking happens on successful callback)
+      trackSignUp("google");
       await signIn("google", { callbackUrl: "/notes" });
     } catch (error) {
       toast.error("An error occurred during Google sign up");

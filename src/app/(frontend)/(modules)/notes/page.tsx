@@ -1,11 +1,16 @@
-import { requireAuth } from "@/app/api/core/utils/auth";
+import { getOptionalUserId } from "@/app/api/core/utils/auth";
 import { Metadata } from "next";
 
 import { searchNotes } from "@/app/api/(modules)/notes/search/route.services";
 import { NoteSortBy } from "@/app/api/(modules)/notes/search/route.types";
+import AuthenticatedUserSheet from "@/app/(frontend)/core/components/organisms/AuthenticatedUserSheet/AuthenticatedUserSheet";
+import TrialUserSheet from "@/app/(frontend)/core/components/organisms/TrialUserSheet/TrialUserSheet";
+import TrialModeBanner from "@/app/(frontend)/core/components/molecules/TrialModeBanner/TrialModeBanner";
 import AddEditNoteDialog from "./components/molecules/AddEditNoteDialog/AddEditNoteDialog";
+import TrialLimitDialog from "./components/molecules/TrialLimitDialog/TrialLimitDialog";
 import AIChatBox from "./components/organisms/AIChatBox/AIChatBox";
 import NotesGrid from "./components/organisms/NotesGrid/NotesGrid";
+import NotesGridClient from "./components/organisms/NotesGridClient/NotesGridClient";
 
 export const metadata: Metadata = {
   title: "Lio | AI Notes",
@@ -26,9 +31,8 @@ export default async function NotesPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const userId = await requireAuth();
-
-  if (!userId) throw Error("userId undefined");
+  // Allow both authenticated and trial users
+  const userId = await getOptionalUserId();
 
   // Await searchParams in Next.js 15+
   const params = await searchParams;
@@ -38,28 +42,44 @@ export default async function NotesPage({
   const page = parseInt(params.page || "1");
   const pageSize = 12;
 
-  // Use backend service to fetch, filter, sort, and paginate notes
-  const result = await searchNotes({
-    userId,
-    query,
-    sortBy,
-    page,
-    pageSize,
-  });
+  // If user is authenticated, fetch from database
+  if (userId) {
+    const result = await searchNotes({
+      userId,
+      query,
+      sortBy,
+      page,
+      pageSize,
+    });
 
+    return (
+      <>
+        <NotesGrid
+          notes={result.notes}
+          currentPage={result.currentPage}
+          totalPages={result.totalPages}
+          totalCount={result.total}
+          initialQuery={query}
+          initialSort={sortBy}
+        />
+
+        <AddEditNoteDialog />
+        <AIChatBox />
+        <AuthenticatedUserSheet />
+        <TrialLimitDialog />
+      </>
+    );
+  }
+
+  // Trial mode - client-side rendering with localStorage
   return (
     <>
-      <NotesGrid
-        notes={result.notes}
-        currentPage={result.currentPage}
-        totalPages={result.totalPages}
-        totalCount={result.total}
-        initialQuery={query}
-        initialSort={sortBy}
-      />
-
+      <TrialModeBanner />
+      <NotesGridClient initialQuery={query} initialSort={sortBy} />
       <AddEditNoteDialog />
       <AIChatBox />
+      <TrialUserSheet />
+      <TrialLimitDialog />
     </>
   );
 }

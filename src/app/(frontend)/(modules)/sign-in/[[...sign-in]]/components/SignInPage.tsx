@@ -13,7 +13,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/(frontend)/core/components/atoms/Card/Card";
+import { trackSignIn } from "@/app/(frontend)/core/utils/analytics";
 import { toast } from "react-toastify";
+import { clearAllTrialData } from "@/app/(frontend)/core/utils/trialMode";
 
 /**
  * Sign In Page Component
@@ -44,6 +46,11 @@ export default function SignInPage() {
       if (result?.error) {
         toast.error(result.error);
       } else if (result?.ok) {
+        // Clear trial data after successful sign in
+        await clearAllTrialData();
+
+        // Track successful sign in
+        trackSignIn("email");
         toast.success("Signed in successfully!");
         router.push("/notes");
         router.refresh();
@@ -62,6 +69,8 @@ export default function SignInPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
+      // Track Google sign in (tracking happens on successful callback)
+      trackSignIn("google");
       await signIn("google", { callbackUrl: "/notes" });
     } catch (error) {
       toast.error("An error occurred during Google sign in");

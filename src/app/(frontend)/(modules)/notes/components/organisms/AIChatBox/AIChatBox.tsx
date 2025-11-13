@@ -1,34 +1,81 @@
 "use client";
 
 import { useChat } from "ai/react";
+import { useSession } from "next-auth/react";
 import { Bot, Trash, XCircle } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
 import { Input } from "@/app/(frontend)/core/components/atoms/Input/Input";
 import { cn } from "@/app/(frontend)/core/utils/utils";
+import { trackChatMessage } from "@/app/(frontend)/core/utils/analytics";
 import { locales } from "@/app/(frontend)/core/i18n";
 import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTrialModeStore } from "@/app/(frontend)/core/store/useTrialModeStore";
 import { useChatBoxStore } from "../../../stores/useChatBoxStore";
 import ChatMessage from "../../molecules/ChatMessage/ChatMessage";
 
 export default function AIChatBox() {
   const locale = useLocale();
   const t = locales[locale];
+  const { data: session } = useSession();
+  const {
+    notes: trialNotes,
+    hasReachedChatLimit: hasReachedLimit,
+    remainingChats,
+    incrementChat,
+  } = useTrialModeStore();
 
   // Use selectors to optimize re-renders
   const isOpen = useChatBoxStore((state) => state.isOpen);
   const closeChatBox = useChatBoxStore((state) => state.closeChatBox);
 
+  // Check if user is in trial mode
+  const isTrialMode = !session?.user;
+
+  // Prepare trial notes body if not authenticated
+  const body = isTrialMode
+    ? {
+        trialNotes: trialNotes,
+      }
+    : undefined;
+
   const {
     messages,
     input,
     handleInputChange,
-    handleSubmit,
+    handleSubmit: originalHandleSubmit,
     setMessages,
     isLoading,
     error,
-  } = useChat();
+  } = useChat({
+    body,
+  });
+
+  // Wrap handleSubmit to check chat limit for trial users
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Check if trial user has reached chat limit
+    if (isTrialMode && hasReachedLimit) {
+      return;
+    }
+
+    // Increment chat count for trial users
+    if (isTrialMode) {
+      const newCount = incrementChat();
+      if (newCount === null) {
+        // Limit reached
+        return;
+      }
+    }
+
+    // Track chat message
+    trackChatMessage(isTrialMode);
+
+    // Call original submit
+    originalHandleSubmit(e);
+  };
 
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -99,11 +146,25 @@ export default function AIChatBox() {
           <Input
             value={input}
             onChange={handleInputChange}
-            placeholder={t.chat.placeholder}
+            placeholder={
+              isTrialMode && hasReachedLimit
+                ? t.chat.limitReached
+                : t.chat.placeholder
+            }
             ref={inputRef}
+            disabled={isTrialMode && hasReachedLimit}
           />
-          <Button type="submit">{t.chat.send}</Button>
+          <Button type="submit" disabled={isTrialMode && hasReachedLimit}>
+            {t.chat.send}
+          </Button>
         </form>
+        {isTrialMode && (
+          <div className="mb-2 px-3 text-center text-xs text-muted-foreground">
+            {hasReachedLimit
+              ? t.chat.upgradeMessage
+              : `${remainingChats} ${t.chat.remainingChats}`}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,8 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Pencil } from "lucide-react";
+import { Pencil, Eye, FileText, FilePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
@@ -26,12 +27,21 @@ import LoadingButton from "@/app/(frontend)/core/components/atoms/LoadingButton/
 import { Skeleton } from "@/app/(frontend)/core/components/atoms/Skeleton/Skeleton";
 import { Textarea } from "@/app/(frontend)/core/components/atoms/Textarea/Textarea";
 import BaseSheet from "@/app/(frontend)/core/components/molecules/BaseSheet/BaseSheet";
+import BaseDialog from "@/app/(frontend)/core/components/molecules/BaseDialog/BaseDialog";
+import ContentSkeleton from "../../atoms/ContentSkeleton/ContentSkeleton";
 import { locales } from "@/app/(frontend)/core/i18n";
 import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTrialModeStore } from "@/app/(frontend)/core/store/useTrialModeStore";
 import { createAxios } from "@/app/(frontend)/core/utils/api";
+import {
+  trackNoteCreated,
+  trackNoteDeleted,
+} from "@/app/(frontend)/core/utils/analytics";
 import { useNoteDialogStore } from "../../../stores/useNoteDialogStore";
+import { useTrialLimitDialogStore } from "../../../stores/useTrialLimitDialogStore";
 
 export default function AddEditNoteDialog() {
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const axios = createAxios();
   const locale = useLocale();
   const t = locales[locale];
@@ -39,11 +49,16 @@ export default function AddEditNoteDialog() {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const { data: session } = useSession();
+  const trialStore = useTrialModeStore();
 
   // Use selectors to optimize re-renders
   const isOpen = useNoteDialogStore((state) => state.isOpen);
   const noteToEdit = useNoteDialogStore((state) => state.noteToEdit);
   const closeDialog = useNoteDialogStore((state) => state.closeDialog);
+  const openTrialLimitDialog = useTrialLimitDialogStore(
+    (state) => state.openDialog,
+  );
 
   const form = useForm<CreateNoteSchema>({
     resolver: zodResolver(createNoteSchema),
@@ -55,6 +70,12 @@ export default function AddEditNoteDialog() {
 
   // Reset form when noteToEdit changes
   useEffect(() => {
+    // If form has unsaved changes when note changes, show confirmation
+    if (form.formState.isDirty && noteToEdit) {
+      setShowConfirmDialog(true);
+      return;
+    }
+
     setIsLoading(true);
     if (noteToEdit) {
       form.reset({
@@ -74,8 +95,69 @@ export default function AddEditNoteDialog() {
     return () => clearTimeout(timer);
   }, [noteToEdit, form]);
 
+  // Handle close with unsaved changes
+  const handleCloseDialog = () => {
+    // Check if form has unsaved changes
+    const hasChanges = form.formState.isDirty;
+
+    if (hasChanges) {
+      // Show confirmation dialog
+      setShowConfirmDialog(true);
+    } else {
+      // No changes, close directly
+      closeDialog();
+    }
+  };
+
+  // Confirm close and discard changes
+  const confirmClose = () => {
+    setShowConfirmDialog(false);
+    form.reset(); // Reset form to clear dirty state
+    closeDialog();
+  };
+
   async function onSubmit(input: CreateNoteSchema) {
     try {
+      // Trial mode handling
+      if (!session?.user) {
+        if (noteToEdit) {
+          // Update existing trial note
+          const updatedNote = trialStore.updateNote(
+            noteToEdit.id,
+            input.title,
+            input.content || "",
+          );
+
+          if (!updatedNote) {
+            throw new Error("Failed to update note");
+          }
+        } else {
+          // Create new trial note
+          const newNote = trialStore.createNote(
+            input.title,
+            input.content || "",
+          );
+
+          if (!newNote) {
+            // Show trial limit dialog instead of toast
+            openTrialLimitDialog();
+            return;
+          }
+
+          // Track note creation in trial mode
+          trackNoteCreated(true);
+          form.reset();
+        }
+
+        // Refresh the notes list
+        trialStore.loadNotes();
+        router.refresh();
+        closeDialog();
+        toast.success(t.notes.successfully);
+        return;
+      }
+
+      // Authenticated user handling (existing logic)
       if (noteToEdit) {
         const response = await axios.put("/api/notes", {
           id: noteToEdit.id,
@@ -89,6 +171,8 @@ export default function AddEditNoteDialog() {
         if (response.status !== 201) {
           throw Error("Status code: " + response.status);
         }
+        // Track note creation for authenticated users
+        trackNoteCreated(false);
         form.reset();
       }
 
@@ -107,11 +191,30 @@ export default function AddEditNoteDialog() {
     if (!noteToEdit) return;
     setDeleteInProgress(true);
     try {
+      // Trial mode handling
+      if (!session?.user) {
+        const success = trialStore.deleteNote(noteToEdit.id);
+
+        if (!success) {
+          throw new Error("Failed to delete note");
+        }
+
+        // Track note deletion in trial mode
+        trackNoteDeleted(true);
+        router.refresh();
+        closeDialog();
+        toast.success(t.notes.deleteSuccessfully);
+        return;
+      }
+
+      // Authenticated user handling (existing logic)
       const response = await axios.delete(`/api/notes/${noteToEdit.id}`);
       if (response.status !== 200) {
         throw Error("Status code: " + response.status);
       }
 
+      // Track note deletion for authenticated users
+      trackNoteDeleted(false);
       router.refresh();
       closeDialog();
       toast.success(t.notes.deleteSuccessfully);
@@ -126,147 +229,199 @@ export default function AddEditNoteDialog() {
   }
 
   return (
-    <BaseSheet
-      open={isOpen}
-      onOpenChange={closeDialog}
-      title={
-        <div className="flex items-center">
-          <span>{noteToEdit ? t.notes.editNote : t.notes.addNote}</span>
-          {noteToEdit && (
+    <>
+      {/* Unsaved Changes Confirmation Dialog */}
+      <BaseDialog
+        open={showConfirmDialog}
+        onOpenChange={setShowConfirmDialog}
+        title={t.dialog.unsavedChangesTitle}
+        description={t.dialog.unsavedChangesDescription}
+        footer={
+          <>
             <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsEditing(!isEditing)}
-              type="button"
+              variant="outline"
+              onClick={() => setShowConfirmDialog(false)}
             >
-              <Pencil size={18} />
+              {t.dialog.continueEditing}
             </Button>
-          )}
-        </div>
-      }
-      footer={
-        <div className="flex gap-2 sm:gap-0 sm:space-x-2">
-          {noteToEdit && (
-            <LoadingButton
-              variant="destructive"
-              loading={deleteInProgress}
-              disabled={form.formState.isSubmitting}
-              onClick={deleteNote}
-              type="button"
-            >
-              {t.notes.deleteNote}
-            </LoadingButton>
-          )}
-          {(isEditing || !noteToEdit) && (
-            <LoadingButton
-              type="submit"
-              form="note-form"
-              loading={form.formState.isSubmitting}
-              disabled={deleteInProgress}
-            >
-              {t.notes.submit}
-            </LoadingButton>
-          )}
-        </div>
-      }
-    >
-      {isLoading ? (
-        // Loading Skeleton
-        <div className="space-y-6">
-          {/* Title Skeleton */}
-          <div className="rounded-lg bg-muted/50 p-4">
-            <Skeleton className="mb-3 h-5 w-20" />
-            <Skeleton className="h-10 w-full" />
-          </div>
+            <Button variant="destructive" onClick={confirmClose}>
+              {t.dialog.discardChanges}
+            </Button>
+          </>
+        }
+      />
 
-          {/* Content Skeleton */}
-          <div className="rounded-lg bg-muted/50 p-4">
-            <Skeleton className="mb-3 h-5 w-24" />
+      <BaseSheet
+        open={isOpen}
+        onOpenChange={handleCloseDialog}
+        title={
+          <div className="flex items-center gap-2.5">
+            {noteToEdit ? (
+              <FileText className="h-5 w-5 text-primary" />
+            ) : (
+              <FilePlus className="h-5 w-5 text-primary" />
+            )}
+            <span className="text-lg font-semibold">
+              {noteToEdit ? t.notes.editNote : t.notes.addNote}
+            </span>
+          </div>
+        }
+        footer={
+          <div className="flex gap-2 sm:gap-0 sm:space-x-2">
+            {noteToEdit && (
+              <LoadingButton
+                variant="destructive"
+                loading={deleteInProgress}
+                disabled={form.formState.isSubmitting}
+                onClick={deleteNote}
+                type="button"
+              >
+                {t.notes.deleteNote}
+              </LoadingButton>
+            )}
+            {(isEditing || !noteToEdit) && (
+              <LoadingButton
+                type="submit"
+                form="note-form"
+                loading={form.formState.isSubmitting}
+                disabled={deleteInProgress}
+              >
+                {t.notes.submit}
+              </LoadingButton>
+            )}
+          </div>
+        }
+      >
+        {isLoading ? (
+          // Loading Skeleton
+          <div className="space-y-5">
+            {/* Title Skeleton */}
             <div className="space-y-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-5/6" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-4/6" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-5/6" />
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-11 w-full rounded-md" />
             </div>
-          </div>
-        </div>
-      ) : noteToEdit && !isEditing ? (
-        // Markdown Preview Mode
-        <div className="space-y-6">
-          {/* Title Section with Background */}
-          <div className="rounded-lg pl-2 pt-2">
-            <h3 className="text-xl font-semibold">{form.getValues("title")}</h3>
-          </div>
 
-          {/* Content Section with Background */}
-          <div className="rounded-lg bg-muted/50 p-4">
-            <div className="prose prose-sm dark:prose-invert max-w-none">
-              <ReactMarkdown>{form.getValues("content") || ""}</ReactMarkdown>
+            {/* Content Skeleton */}
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-20" />
+              <ContentSkeleton />
             </div>
           </div>
-        </div>
-      ) : (
-        // Edit Mode
-        <Form {...form}>
-          <form
-            id="note-form"
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6"
-          >
-            {/* Title Field with Background */}
-            <div className="rounded-lg bg-muted/50 p-4">
+        ) : noteToEdit && !isEditing ? (
+          // Markdown Preview Mode
+          <div className="space-y-5">
+            {/* Title Section with Edit Button */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t.notes.noteTitle}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsEditing(true)}
+                  type="button"
+                  className="h-8 gap-1.5"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                  <span className="text-xs">{t.notes.editMode}</span>
+                </Button>
+              </div>
+              <div className="border-l-4 border-primary py-1 pl-4">
+                <h2 className="text-2xl font-bold leading-tight">
+                  {form.getValues("title")}
+                </h2>
+              </div>
+            </div>
+
+            {/* Content Section */}
+            <div className="space-y-2">
+              <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t.notes.noteContent}
+              </div>
+              <div className="prose prose-sm dark:prose-invert max-w-none rounded-lg border bg-muted/30 p-4">
+                <ReactMarkdown>
+                  {form.getValues("content") || "*No content*"}
+                </ReactMarkdown>
+              </div>
+            </div>
+          </div>
+        ) : (
+          // Edit Mode
+          <Form {...form}>
+            <form
+              id="note-form"
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-5"
+            >
+              {/* Title Field */}
               <FormField
                 control={form.control}
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base font-semibold">
-                      {t.notes.noteTitle}
-                    </FormLabel>
+                    <div className="flex items-center justify-between">
+                      <FormLabel className="text-sm font-medium">
+                        {t.notes.noteTitle}
+                      </FormLabel>
+                      {noteToEdit && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setIsEditing(false)}
+                          type="button"
+                          className="h-8 gap-1.5"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          <span className="text-xs">{t.notes.previewMode}</span>
+                        </Button>
+                      )}
+                    </div>
                     <FormControl>
                       <Input
                         placeholder={t.notes.titlePlaceholder}
                         {...field}
-                        className="bg-background"
+                        className="h-11 text-base focus-visible:ring-primary"
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            {/* Content Field with Background */}
-            <div className="rounded-lg bg-muted/50 p-4">
+              {/* Content Field */}
               <FormField
                 control={form.control}
                 name="content"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base font-semibold">
+                    <FormLabel className="text-sm font-medium">
                       {t.notes.noteContent}
                     </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder={t.notes.contentPlaceholder}
                         {...field}
-                        rows={15}
-                        className="scrollbar-clean resize-none bg-background"
+                        rows={16}
+                        className="scrollbar-clean resize-none text-sm leading-relaxed focus-visible:ring-primary"
                       />
                     </FormControl>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>💡</span>
+                      <span>
+                        {locale === "vi"
+                          ? "Hỗ trợ Markdown: **in đậm**, *in nghiêng*, # tiêu đề"
+                          : "Supports Markdown: **bold**, *italic*, # heading"}
+                      </span>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-          </form>
-        </Form>
-      )}
-    </BaseSheet>
+            </form>
+          </Form>
+        )}
+      </BaseSheet>
+    </>
   );
 }

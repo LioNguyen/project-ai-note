@@ -38,3 +38,24 @@ export async function requireAuth(): Promise<string> {
 
   return userId;
 }
+
+/**
+ * Get the current user ID or return null for trial mode
+ * This is used in routes that support both authenticated and trial users
+ *
+ * @returns The user ID or null for trial mode
+ */
+export async function getOptionalUserId(): Promise<string | null> {
+  const session = await getSession();
+  return session?.user?.id || null;
+}
+
+/**
+ * Check if the current user is authenticated
+ *
+ * @returns true if authenticated, false otherwise
+ */
+export async function isAuthenticated(): Promise<boolean> {
+  const userId = await getUserId();
+  return !!userId;
+}
