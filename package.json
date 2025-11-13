@@ -41,6 +41,7 @@
     "react-hook-form": "^7.47.0",
     "react-markdown": "^10.1.0",
     "react-toastify": "^10.0.4",
+    "sharp": "^0.34.5",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4",
