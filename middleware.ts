@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
 
 /**
  * Middleware for handling authentication and routing
@@ -29,14 +28,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // For other routes, check authentication
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
+  // Check for NextAuth session cookie instead of using getToken
+  // NextAuth uses "next-auth.session-token" in production or "__Secure-next-auth.session-token"
+  // and "next-auth.session-token" in development
+  const sessionToken =
+    request.cookies.get("next-auth.session-token") ||
+    request.cookies.get("__Secure-next-auth.session-token");
 
-  // If no token and not a public route, redirect to notes (trial mode)
-  if (!token) {
+  // If no session token and not a public route, redirect to notes (trial mode)
+  if (!sessionToken) {
     const url = request.nextUrl.clone();
     url.pathname = "/notes";
     return NextResponse.redirect(url);

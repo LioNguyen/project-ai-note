@@ -14,12 +14,6 @@ const nextConfig = {
       },
     ],
   },
-  // Ensure middleware is properly handled in production
-  experimental: {
-    serverActions: {
-      bodySizeLimit: '2mb',
-    },
-  },
 };
 
 module.exports = nextConfig;
