@@ -1,5 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { requireAuth } from "@/app/api/core/utils/auth";
 
 import {
   createNoteSchema,
@@ -14,7 +14,7 @@ import { createNote, getAllNotes, updateNote } from "./route.services";
  */
 export async function GET(req: Request) {
   try {
-    const { userId } = await auth();
+    const userId = await requireAuth();
 
     if (!userId) {
       return new NextResponse("You are not authenticated", { status: 401 });
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
 
     const { title, content } = parseResult.data;
 
-    const { userId } = await auth();
+    const userId = await requireAuth();
 
     if (!userId) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -77,7 +77,7 @@ export async function PUT(req: Request) {
 
     const { id, title, content } = parseResult.data;
 
-    const { userId } = await auth();
+    const userId = await requireAuth();
 
     if (!userId) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });

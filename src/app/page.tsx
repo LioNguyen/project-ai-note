@@ -1,12 +1,12 @@
 import logo from "@/app/shared/assets/logo.png";
 import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
-import { auth } from "@clerk/nextjs/server";
+import { getUserId } from "@/app/api/core/utils/auth";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
-  const { userId } = await auth();
+  const userId = await getUserId();
 
   if (userId) redirect("/notes");
 
@@ -20,7 +20,7 @@ export default async function Home() {
       </div>
       <p className="max-w-prose text-center">
         An intelligent note-taking app with AI integration, built with OpenAI,
-        Pinecone, Next.js, Shadcn UI, Clerk, and more.
+        Pinecone, Next.js, Shadcn UI, NextAuth.js, and more.
       </p>
       <Button size="lg" asChild>
         <Link href="/notes">Open</Link>

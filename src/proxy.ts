@@ -1,25 +1,19 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { withAuth } from "next-auth/middleware";
 
-// Define public routes that don't require authentication
-const isPublicRoute = createRouteMatcher([
-  "/",
-  "/sign-in(.*)",
-  "/sign-up(.*)",
-  "/api/pinecone-ping", // Allow cron job to run without authentication
-]);
-
-export default clerkMiddleware(async (auth, request) => {
-  // Protect all routes except public ones
-  if (!isPublicRoute(request)) {
-    await auth.protect();
-  }
+/**
+ * NextAuth Middleware Configuration
+ * Protects routes that require authentication
+ */
+export default withAuth(function middleware(req) {
+  // NextAuth middleware will handle authentication checks
+  // This function runs for all matched routes
 });
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
-    "/(api|trpc)(.*)",
+    // Protect notes pages and API routes
+    "/notes/:path*",
+    "/api/notes/:path*",
+    "/api/chat/:path*",
   ],
 };

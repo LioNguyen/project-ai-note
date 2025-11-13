@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { requireAuth } from "@/app/api/core/utils/auth";
 import { Metadata } from "next";
 
 import { searchNotes } from "@/app/api/(modules)/notes/search/route.services";
@@ -26,7 +26,7 @@ export default async function NotesPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   if (!userId) throw Error("userId undefined");
 

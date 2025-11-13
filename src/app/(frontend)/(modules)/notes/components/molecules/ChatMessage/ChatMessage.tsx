@@ -1,8 +1,8 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "next-auth/react";
 import { Message } from "ai";
-import { Bot } from "lucide-react";
+import { Bot, User } from "lucide-react";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 
@@ -12,10 +12,14 @@ interface ChatMessageProps {
   message: Pick<Message, "role" | "content">;
 }
 
+/**
+ * Chat Message Component
+ * Displays individual chat messages from user or AI assistant
+ */
 export default function ChatMessage({
   message: { role, content },
 }: ChatMessageProps) {
-  const { user } = useUser();
+  const { data: session } = useSession();
 
   const isAiMessage = role === "assistant";
 
@@ -41,14 +45,22 @@ export default function ChatMessage({
           <p>{content}</p>
         )}
       </div>
-      {!isAiMessage && user?.imageUrl && (
-        <Image
-          src={user.imageUrl}
-          alt="User image"
-          width={100}
-          height={100}
-          className="ml-2 h-10 w-10 rounded-full object-cover"
-        />
+      {!isAiMessage && (
+        <>
+          {session?.user?.image ? (
+            <Image
+              src={session.user.image}
+              alt="User image"
+              width={100}
+              height={100}
+              className="ml-2 h-10 w-10 rounded-full object-cover"
+            />
+          ) : (
+            <div className="ml-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary">
+              <User className="h-5 w-5 text-primary-foreground" />
+            </div>
+          )}
+        </>
       )}
     </div>
   );

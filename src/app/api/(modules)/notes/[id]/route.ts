@@ -1,5 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
-
+import { requireAuth } from "@/app/api/core/utils/auth";
 import { notesIndex } from "@/app/api/core/utils/db/pinecone";
 import prisma from "@/app/api/core/utils/db/prisma";
 import { deleteNoteSchema } from "@/app/api/core/utils/validation/note";
@@ -26,7 +25,7 @@ export async function DELETE(
       return Response.json({ error: "Note not found" }, { status: 404 });
     }
 
-    const { userId } = await auth();
+    const userId = await requireAuth();
 
     if (!userId || userId !== note.userId) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });

@@ -1,9 +1,9 @@
-import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
+import { SessionProvider } from "./SessionProvider";
 import { ThemeProvider } from "./ThemeProvider";
 import "./globals.css";
 
@@ -23,9 +23,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={inter.className}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <SessionProvider>
           <ThemeProvider attribute="class">
             {children}
             <ToastContainer
@@ -43,8 +43,8 @@ export default function RootLayout({
               bodyClassName="text-sm"
             />
           </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+        </SessionProvider>
+      </body>
+    </html>
   );
 }

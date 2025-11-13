@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { requireAuth } from "@/app/api/core/utils/auth";
 import { NextRequest } from "next/server";
 
 import { searchNotes } from "./route.services";
@@ -10,7 +10,7 @@ import { NoteSortBy } from "./route.types";
  */
 export async function GET(req: NextRequest) {
   try {
-    const { userId } = await auth();
+    const userId = await requireAuth();
 
     if (!userId) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });

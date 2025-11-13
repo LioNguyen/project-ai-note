@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { requireAuth } from "@/app/api/core/utils/auth";
 
 import { processChatRequest } from "./route.services";
 import { ChatRequest } from "./route.types";
@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     const body: ChatRequest = await req.json();
     const { messages } = body;
 
-    const { userId } = await auth();
+    const userId = await requireAuth();
 
     if (!userId) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
