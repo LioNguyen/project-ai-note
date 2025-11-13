@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
 import {
@@ -224,12 +225,12 @@ export default function SignUpPage() {
 
           <div className="text-center text-sm">
             Already have an account?{" "}
-            <a
+            <Link
               href="/sign-in"
               className="font-medium text-primary hover:underline"
             >
               Sign In
-            </a>
+            </Link>
           </div>
         </CardContent>
       </Card>

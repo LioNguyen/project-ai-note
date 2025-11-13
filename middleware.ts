@@ -16,7 +16,14 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Define public routes that don't require authentication
-  const publicRoutes = ["/", "/notes", "/sign-in", "/sign-up", "/auth/error"];
+  const publicRoutes = [
+    "/",
+    "/notes",
+    "/sign-in",
+    "/sign-up",
+    "/auth/error",
+    "/api/pinecone-ping", // Allow cron job to run without authentication
+  ];
 
   // Check if the current path is a public route
   const isPublicRoute = publicRoutes.some((route) =>

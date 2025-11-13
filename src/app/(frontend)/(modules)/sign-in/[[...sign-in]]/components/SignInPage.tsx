@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
 import { Input } from "@/app/(frontend)/core/components/atoms/Input/Input";
 import { Label } from "@/app/(frontend)/core/components/atoms/Label/Label";
@@ -165,13 +166,13 @@ export default function SignInPage() {
           </form>
 
           <div className="text-center text-sm">
-            Don't have an account?{" "}
-            <a
+            Don&apos;t have an account?{" "}
+            <Link
               href="/sign-up"
               className="font-medium text-primary hover:underline"
             >
               Sign Up
-            </a>
+            </Link>
           </div>
         </CardContent>
       </Card>

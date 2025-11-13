@@ -49,7 +49,7 @@ export default function RootLayout({
           />
         </>
       )}
-      <body className={inter.className} suppressHydrationWarning>
+      <body className={inter.className}>
         <SessionProvider>
           <ThemeProvider attribute="class">
             <TrialDataCleaner />
