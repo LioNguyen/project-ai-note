@@ -1,0 +1,66 @@
+name: Cron Health Check & Cleanup
+
+on:
+  schedule:
+    # Run daily at 20:00 UTC
+    - cron: "0 20 * * *"
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  ping:
+    name: Health Check (Pinecone & MongoDB)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ping Services
+        env:
+          ENDPOINT_URL: https://ainote.lionguyen.com/api/cron/ping
+        run: |
+          echo "🔔 Pinging services at: $ENDPOINT_URL"
+
+          MAX_RETRIES=3
+          RETRY_DELAY=10
+
+          for i in $(seq 1 $MAX_RETRIES); do
+            STATUS=$(curl -s -o /tmp/ping_output.txt -w "%{http_code}" "$ENDPOINT_URL")
+
+            if [ "$STATUS" -eq 200 ]; then
+              echo "✅ Health check succeeded (HTTP 200)"
+              cat /tmp/ping_output.txt
+              exit 0
+            else
+              echo "⚠️ Attempt $i failed (status: $STATUS)"
+              if [ "$i" -lt "$MAX_RETRIES" ]; then
+                echo "⏳ Retrying in $RETRY_DELAY seconds..."
+                sleep $RETRY_DELAY
+              fi
+            fi
+          done
+
+          echo "❌ All health check attempts failed."
+          cat /tmp/ping_output.txt
+          exit 1
+
+  cleanup:
+    name: Cleanup Old Trial Notes
+    runs-on: ubuntu-latest
+    needs: ping # Run after health check succeeds
+
+    steps:
+      - name: Cleanup Trial Notes
+        env:
+          ENDPOINT_URL: https://ainote.lionguyen.com/api/cron/cleanup
+        run: |
+          echo "🧹 Cleaning up old trial notes at: $ENDPOINT_URL"
+
+          STATUS=$(curl -s -o /tmp/cleanup_output.txt -w "%{http_code}" -X POST "$ENDPOINT_URL")
+
+          if [ "$STATUS" -eq 200 ]; then
+            echo "✅ Cleanup succeeded (HTTP 200)"
+            cat /tmp/cleanup_output.txt
+            exit 0
+          else
+            echo "❌ Cleanup failed (status: $STATUS)"
+            cat /tmp/cleanup_output.txt
+            exit 1
+          fi

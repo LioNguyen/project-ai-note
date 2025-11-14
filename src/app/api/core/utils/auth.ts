@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/auth.config";
+import { authOptions } from "@/app/api/(modules)/auth/auth.config";
 
 /**
  * Get the current authenticated user's session

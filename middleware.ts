@@ -22,7 +22,8 @@ export async function middleware(request: NextRequest) {
     "/sign-in",
     "/sign-up",
     "/auth/error",
-    "/api/pinecone-ping", // Allow cron job to run without authentication
+    "/api/cron/ping", // Allow health check cron job to run without authentication
+    "/api/cron/cleanup", // Allow cleanup cron job to run without authentication
   ];
 
   // Check if the current path is a public route
