@@ -24,7 +24,7 @@ A modern note-taking application with AI-powered chat capabilities built with Ne
 ### AI & Machine Learning
 
 - **[Google Gemini AI](https://ai.google.dev/)** - Chat completions with streaming
-- **[OpenAI Embeddings](https://platform.openai.com/docs/guides/embeddings)** - Text embeddings for semantic search
+- **[Google Embeddings](https://ai.google.dev/models/gemini-embedding)** - Text embeddings (768-dimensional) for semantic search
 - **[Vercel AI SDK](https://sdk.vercel.ai/)** - AI streaming utilities
 
 ### UI & Styling
@@ -60,43 +60,77 @@ src/
 ├── app/
 │   ├── (backend)/              # Backend API layer (route group)
 │   │   └── api/
-│   │       ├── core/           # Shared backend utilities
-│   │       │   └── utils/      # Helper functions
-│   │       │       ├── db/     # Database connections
-│   │       │       │   ├── prisma.ts    # Prisma singleton
-│   │       │       │   └── pinecone.ts  # Pinecone index
-│   │       │       ├── validation/
-│   │       │       │   └── note.ts      # Zod schemas
-│   │       │       ├── openai.ts        # OpenAI client & embeddings
-│   │       │       ├── string.ts        # Vietnamese text utilities
-│   │       │       ├── embedding.ts     # Note embedding generation
-│   │       │       └── chat.ts          # Chat helper functions
-│   │       ├── notes/          # Notes CRUD API
-│   │       │   ├── route.ts             # GET (all), POST (create)
-│   │       │   ├── route.services.ts    # Business logic
-│   │       │   ├── route.types.ts       # TypeScript types
-│   │       │   ├── [id]/                # Individual note operations
-│   │       │   │   ├── route.ts         # PUT (update), DELETE
-│   │       │   │   ├── route.services.ts
-│   │       │   │   └── route.types.ts
-│   │       │   └── search/              # Search & filtering
-│   │       │       ├── route.ts         # GET with query params
-│   │       │       ├── route.services.ts
-│   │       │       └── route.types.ts
-│   │       └── chat/           # AI chat API (RAG pattern)
-│   │           ├── route.ts             # POST (streaming response)
-│   │           ├── route.services.ts    # AI logic & context building
-│   │           └── route.types.ts       # Message types
+│   │       ├── (modules)/      # Modular API endpoints (route group)
+│   │       │   ├── auth/       # Authentication API
+│   │       │   │   ├── auth.config.ts          # NextAuth config
+│   │       │   │   ├── [...nextauth]/
+│   │       │   │   │   └── route.ts            # NextAuth handler
+│   │       │   │   └── signup/
+│   │       │   │       └── route.ts            # Sign-up endpoint
+│   │       │   ├── cron/       # Scheduled jobs & health checks
+│   │       │   │   ├── cleanup/
+│   │       │   │   │   ├── route.ts            # Cleanup execution
+│   │       │   │   │   ├── route.services.ts   # Cleanup logic
+│   │       │   │   │   └── route.types.ts      # Cleanup schemas
+│   │       │   │   └── ping/
+│   │       │   │       ├── route.ts            # Health check
+│   │       │   │       ├── route.services.ts   # Ping services
+│   │       │   │       └── route.types.ts      # Ping types
+│   │       │   ├── chat/       # AI chat API (RAG)
+│   │       │   │   ├── route.ts                # Stream endpoint
+│   │       │   │   ├── route.services.ts       # AI logic
+│   │       │   │   └── route.types.ts          # Message types
+│   │       │   ├── notes/      # Notes CRUD API
+│   │       │   │   ├── route.ts                # GET, POST
+│   │       │   │   ├── route.services.ts       # Business logic
+│   │       │   │   ├── route.types.ts          # Note types
+│   │       │   │   ├── [id]/                   # Individual note
+│   │       │   │   │   ├── route.ts            # PUT, DELETE
+│   │       │   │   │   ├── route.services.ts
+│   │       │   │   │   └── route.types.ts
+│   │       │   │   └── search/                 # Search & filter
+│   │       │   │       ├── route.ts            # Search endpoint
+│   │       │   │       ├── route.services.ts
+│   │       │   │       └── route.types.ts
+│   │       │   └── trial/      # Trial mode operations
+│   │       │       ├── clear/
+│   │       │       │   └── route.ts            # Clear trial data
+│   │       │       └── sync-pinecone/
+│   │       │           ├── route.ts            # Sync notes
+│   │       │           ├── [id]/
+│   │       │           │   └── route.ts        # Sync single note
+│   │       │           ├── route.services.ts
+│   │       │           └── route.types.ts
+│   │       └── core/           # Shared backend utilities
+│   │           └── utils/      # Helper functions
+│   │               ├── db/
+│   │               │   ├── prisma.ts           # Prisma singleton
+│   │               │   └── pinecone.ts         # Pinecone index
+│   │               ├── validation/
+│   │               │   └── note.ts             # Zod schemas
+│   │               ├── auth.ts                 # Auth helpers
+│   │               ├── openai.ts               # Gemini & embeddings
+│   │               ├── string.ts               # Text utilities
+│   │               ├── embedding.ts            # Embedding gen
+│   │               ├── chat.ts                 # Chat helpers
+│   │               └── trialMode.ts            # Trial utilities
 │   ├── (frontend)/             # Frontend layer (route group)
 │   │   ├── (modules)/          # Feature modules
-│   │   │   ├── chat/           # Chat module (placeholder)
+│   │   │   ├── (chat-bot)/     # Chat bot module (optional)
+│   │   │   │   ├── handlers/
+│   │   │   │   │   └── useChatBot.ts    # Chat logic
+│   │   │   │   └── components/
+│   │   │   │       ├── atoms/
+│   │   │   │       ├── molecules/
+│   │   │   │       └── organisms/
 │   │   │   ├── notes/          # Notes management
-│   │   │   │   ├── page.tsx           # Notes listing page
-│   │   │   │   ├── layout.tsx         # Notes layout wrapper
-│   │   │   │   ├── loading.tsx        # Loading state
+│   │   │   │   ├── page.tsx              # Notes listing
+│   │   │   │   ├── layout.tsx            # Module layout
+│   │   │   │   ├── loading.tsx           # Loading state
 │   │   │   │   ├── components/
+│   │   │   │   │   ├── atoms/
 │   │   │   │   │   ├── molecules/
-│   │   │   │   │   │   ├── AddEditNoteDialog/
+│   │   │   │   │   │   ├── AddNoteButton/
 │   │   │   │   │   │   ├── ChatMessage/
 │   │   │   │   │   │   └── NoteCardSkeleton/
 │   │   │   │   │   └── organisms/
@@ -104,8 +138,8 @@ src/
 │   │   │   │   │       ├── Note/
 │   │   │   │   │       └── NotesGrid/
 │   │   │   │   └── stores/
-│   │   │   │       ├── useChatBoxStore.ts    # Chat UI state
-│   │   │   │       └── useNoteDialogStore.ts # Dialog state
+│   │   │   │       ├── useChatBoxStore.ts
+│   │   │   │       └── useNoteDialogStore.ts
 │   │   │   ├── sign-in/[[...sign-in]]/
 │   │   │   │   ├── page.tsx
 │   │   │   │   └── components/
@@ -120,7 +154,7 @@ src/
 │   │       │   │   ├── Button/
 │   │       │   │   ├── Card/
 │   │       │   │   ├── Dialog/
-│   │       │   │   ├── EmptyState/      # Empty state component
+│   │       │   │   ├── EmptyState/
 │   │       │   │   ├── Form/
 │   │       │   │   ├── Input/
 │   │       │   │   ├── Label/
@@ -129,37 +163,47 @@ src/
 │   │       │   │   ├── Select/
 │   │       │   │   ├── Sheet/
 │   │       │   │   ├── Skeleton/
-│   │       │   │   ├── Switch/          # Custom switch component
+│   │       │   │   ├── Switch/
 │   │       │   │   └── Textarea/
 │   │       │   ├── molecules/  # Composite components
+│   │       │   │   ├── AddNoteButton/
 │   │       │   │   ├── AIChatButton/
 │   │       │   │   ├── BaseSheet/
-│   │       │   │   ├── LanguageSwitcher/ # EN/VI toggle
+│   │       │   │   ├── LanguageSwitcher/
 │   │       │   │   ├── SearchBox/
-│   │       │   │   └── ThemeToggleButton/
-│   │       │   └── organisms/  # Complex UI sections
-│   │       │       ├── DataGrid/        # Reusable data grid
+│   │       │   │   ├── ThemeToggleButton/
+│   │       │   │   └── TrialModeBanner/
+│   │       │   └── organisms/  # Complex sections
+│   │       │       ├── DataGrid/
 │   │       │       └── NavBar/
 │   │       ├── i18n/           # Internationalization (EN/VI)
-│   │       │   ├── index.ts    # Locale exports
+│   │       │   ├── index.ts
 │   │       │   └── locale/
 │   │       │       ├── en/
-│   │       │       │   └── default.ts   # English translations
+│   │       │       │   └── default.ts
 │   │       │       └── vi/
-│   │       │           └── default.ts   # Vietnamese translations
+│   │       │           └── default.ts
 │   │       ├── store/          # Global state (Zustand)
-│   │       │   └── useLanguageStore.ts  # Language preference
+│   │       │   ├── useLanguageStore.ts
+│   │       │   ├── useTrialModeStore.ts
+│   │       │   └── useUserMenuStore.ts
+│   │       ├── domains/        # Domain types
+│   │       │   └── types/
 │   │       └── utils/          # Frontend utilities
-│   │           ├── api.ts      # API client helpers
-│   │           └── utils.ts    # General utilities (cn, etc.)
+│   │           ├── analytics.ts
+│   │           ├── api.ts
+│   │           ├── trialMode.ts
+│   │           └── utils.ts
 │   ├── shared/                 # Shared assets
 │   │   └── assets/
-│   │       └── logo.png
-│   ├── globals.css             # Global styles
-│   ├── layout.tsx              # Root layout
-│   ├── page.tsx                # Home page
-│   └── ThemeProvider.tsx       # Theme context provider
-├── middleware.ts               # Next.js middleware (auth routing)
+│   │       ├── logo.png
+│   │       └── logo-old.png
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── SessionProvider.tsx
+│   └── ThemeProvider.tsx
+├── middleware.ts               # Auth & routing middleware
 └── prisma/
     └── schema.prisma           # Database schema
 ```
@@ -183,6 +227,17 @@ All API routes follow a consistent three-file structure:
 - **`route.ts`** - HTTP handlers (GET, POST, PUT, DELETE)
 - **`route.services.ts`** - Business logic and data operations
 - **`route.types.ts`** - TypeScript interfaces and types
+
+**API Module Organization:**
+
+- **`/api/(modules)/auth`** - Authentication (NextAuth, signup)
+- **`/api/(modules)/cron`** - Scheduled jobs (cleanup trial notes, health checks)
+  - `cleanup` - POST to execute, GET for dry run
+  - `ping` - GET health check for Pinecone & MongoDB
+- **`/api/(modules)/chat`** - AI chat with RAG pattern
+- **`/api/(modules)/notes`** - CRUD operations with semantic search
+- **`/api/(modules)/trial`** - Trial mode operations (sync, cleanup)
+- **`/api/core/utils`** - Shared backend utilities
 
 **Example Structure:**
 
@@ -262,11 +317,45 @@ npm run sync-pinecone
 
 - **Note Management**: Create, read, update, delete notes with rich text
 - **Semantic Search**: Find notes by meaning, not just keywords
-- **AI Chat Assistant**: Ask questions about your notes with context-aware responses
+- **AI Chat Assistant**: Ask questions about your notes with context-aware responses (RAG)
 - **Dark Mode**: System-aware theme with manual toggle
 - **Internationalization**: English and Vietnamese language support
 - **Authentication**: Secure user authentication with Clerk
+- **Trial Mode**: Non-authenticated access to test the app
+- **Health Monitoring**: Automated health checks for Pinecone & MongoDB
+- **Auto Cleanup**: Scheduled job to remove old trial notes (7+ days)
 - **Analytics**: Google Analytics 4 tracking for user behavior insights
+
+## API Endpoints
+
+### Health & Monitoring
+
+- **GET** `/api/cron/ping` - Health check (Pinecone + MongoDB)
+- **GET** `/api/cron/cleanup` - Dry run (check what would be deleted)
+- **POST** `/api/cron/cleanup` - Execute cleanup (delete notes 7+ days old)
+
+### Authentication
+
+- **POST** `/api/auth/signup` - Sign up endpoint
+- **GET/POST** `/api/auth/[...nextauth]` - NextAuth authentication
+
+### Notes Management
+
+- **GET** `/api/notes` - List all notes
+- **POST** `/api/notes` - Create note
+- **PUT** `/api/notes/[id]` - Update note
+- **DELETE** `/api/notes/[id]` - Delete note
+- **GET** `/api/notes/search` - Search notes
+
+### AI Chat
+
+- **POST** `/api/chat` - Send message with streaming response
+
+### Trial Mode
+
+- **POST** `/api/trial/sync-pinecone` - Sync trial notes to Pinecone
+- **POST** `/api/trial/sync-pinecone/[id]` - Sync single trial note
+- **DELETE** `/api/trial/clear` - Clear all trial data
 
 ## Documentation
 

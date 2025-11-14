@@ -5,7 +5,7 @@
 
 import { notesIndex } from "../src/app/api/core/utils/db/pinecone";
 import prisma from "../src/app/api/core/utils/db/prisma";
-import { getEmbedding } from "../src/app/api/core/utils/openai";
+import { getEmbedding } from "../src/app/api/core/utils/gemini";
 
 async function syncNotesToPinecone() {
   console.log("🚀 Starting Pinecone sync...\n");

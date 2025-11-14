@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "AI Note",
   description: "The intelligent note-taking app",
   icons: {
-    icon: "/logo.png",
+    icon: "/logo.png?v=2", // Add version to bust cache
   },
 };
 

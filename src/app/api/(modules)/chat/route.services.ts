@@ -1,23 +1,14 @@
-import { GenerativeModel } from "@google/generative-ai";
-
-import { notesIndex } from "@/app/api/core/utils/db/pinecone";
-import prisma from "@/app/api/core/utils/db/prisma";
-import getGeminiClient, { getEmbedding } from "@/app/api/core/utils/openai";
 import {
+  buildSystemPrompt,
   convertToGeminiFormat,
-  sanitizeChatHistory,
   getNoteOverview,
   getRelevantNotes,
-  buildSystemPrompt,
+  sanitizeChatHistory,
 } from "@/app/api/core/utils/chat";
+import { notesIndex } from "@/app/api/core/utils/db/pinecone";
+import getGeminiClient, { getEmbedding } from "@/app/api/core/utils/gemini";
 
-import {
-  ChatMessage,
-  GeminiMessage,
-  NoteOverview,
-  RelevantNote,
-  TrialNoteForChat,
-} from "./route.types";
+import { ChatMessage, TrialNoteForChat } from "./route.types";
 
 /**
  * Process chat request and generate streaming response

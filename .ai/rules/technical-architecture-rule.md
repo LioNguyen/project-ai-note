@@ -10,7 +10,7 @@
 - **Backend Integration**: API routes with service layer pattern
 - **Database Layer**: Prisma ORM with PostgreSQL, Pinecone vector database
 - **Authentication**: Clerk for user management
-- **AI Integration**: Google Gemini AI with RAG pattern, OpenAI embeddings
+- **AI Integration**: Google Gemini AI with RAG pattern, Google Embeddings (768-dim)
 
 ### 1.2. Technology Stack
 
@@ -19,11 +19,12 @@
 - **TypeScript**: 5 with strict type checking
 - **Database**: Prisma 5.5.2 + PostgreSQL
 - **Vector DB**: Pinecone for semantic search
-- **AI Services**: Google Gemini AI (chat), OpenAI (embeddings)
-- **Authentication**: Clerk 6.34.5
+- **AI Services**: Google Gemini AI (chat), Google Embeddings (text-embedding-004)
+- **Authentication**: Clerk 6.34.5 for user management
 - **Styling**: Tailwind CSS 3 with shadcn/ui components
 - **State Management**: Zustand 5.0.8
 - **Form Handling**: React Hook Form 7 with Zod validation
+- **Cron Jobs**: GitHub Actions for scheduled tasks (health check, cleanup)
 
 ### 1.3. Styling Standards
 
@@ -66,8 +67,7 @@ AI Note-Taking Application is a full-stack Next.js application that combines not
 │         │                             │                    │
 │         │                             ├─► Prisma/Postgres │
 │         │                             ├─► Pinecone Vector  │
-│         │                             ├─► Gemini AI       │
-│         │                             └─► OpenAI          │
+│         │                             └─► Gemini AI       │
 │         │                                                  │
 │  ┌─────────────────┐                                      │
 │  │  State (Zustand)│                                      │
@@ -102,32 +102,60 @@ The application follows Next.js App Router conventions with route groups for cle
 src/app/
 ├── (backend)/                  # Backend API layer (route group)
 │   └── api/
-│       ├── core/utils/        # Shared backend utilities
-│       │   ├── db/
-│       │   │   ├── prisma.ts           # Singleton Prisma client
-│       │   │   └── pinecone.ts         # Pinecone vector index
-│       │   ├── validation/
-│       │   │   └── note.ts             # Zod validation schemas
-│       │   ├── openai.ts               # OpenAI client & embedding API
-│       │   ├── string.ts               # Vietnamese text utilities
-│       │   ├── embedding.ts            # Note embedding generation
-│       │   └── chat.ts                 # Chat helper functions
-│       ├── notes/             # Notes API
-│       │   ├── route.ts                # GET all, POST create
-│       │   ├── route.services.ts       # CRUD business logic
-│       │   ├── route.types.ts          # Note type definitions
-│       │   ├── [id]/                   # Single note operations
-│       │   │   ├── route.ts            # PUT update, DELETE
-│       │   │   ├── route.services.ts
-│       │   │   └── route.types.ts
-│       │   └── search/                 # Search & filter
-│       │       ├── route.ts            # GET with query params
-│       │       ├── route.services.ts   # Search logic
-│       │       └── route.types.ts
-│       └── chat/              # AI Chat API
-│           ├── route.ts                # POST streaming response
-│           ├── route.services.ts       # RAG implementation
-│           └── route.types.ts          # Message types
+│       ├── (modules)/          # Modular API endpoints (route group)
+│       │   ├── auth/           # Authentication API
+│       │   │   ├── auth.config.ts          # Auth configuration
+│       │   │   ├── [...nextauth]/
+│       │   │   │   └── route.ts            # NextAuth route handler
+│       │   │   └── signup/
+│       │   │       └── route.ts            # Sign-up endpoint
+│       │   ├── cron/           # Scheduled jobs & health checks
+│       │   │   ├── cleanup/
+│       │   │   │   ├── route.ts            # POST (execute), GET (dry run)
+│       │   │   │   ├── route.services.ts   # Cleanup business logic
+│       │   │   │   └── route.types.ts      # Cleanup types & schemas
+│       │   │   └── ping/
+│       │   │       ├── route.ts            # GET health check
+│       │   │       ├── route.services.ts   # Pinecone & MongoDB ping
+│       │   │       └── route.types.ts      # Ping response types
+│       │   ├── chat/           # AI Chat API (RAG pattern)
+│       │   │   ├── route.ts                # POST (streaming response)
+│       │   │   ├── route.services.ts       # AI logic & context building
+│       │   │   └── route.types.ts          # Message types
+│       │   ├── notes/          # Notes CRUD API
+│       │   │   ├── route.ts                # GET (all), POST (create)
+│       │   │   ├── route.services.ts       # Business logic
+│       │   │   ├── route.types.ts          # TypeScript types
+│       │   │   ├── [id]/                   # Individual note operations
+│       │   │   │   ├── route.ts            # PUT (update), DELETE
+│       │   │   │   ├── route.services.ts
+│       │   │   │   └── route.types.ts
+│       │   │   └── search/                 # Search & filtering
+│       │   │       ├── route.ts            # GET with query params
+│       │   │       ├── route.services.ts
+│       │   │       └── route.types.ts
+│       │   └── trial/          # Trial mode operations
+│       │       ├── clear/
+│       │       │   └── route.ts            # DELETE all trial data
+│       │       └── sync-pinecone/
+│       │           ├── route.ts            # POST sync trial notes
+│       │           ├── [id]/
+│       │           │   └── route.ts        # Individual note sync
+│       │           ├── route.services.ts
+│       │           └── route.types.ts
+│       └── core/               # Shared backend utilities
+│           └── utils/          # Helper functions
+│               ├── db/
+│               │   ├── prisma.ts           # Singleton Prisma client
+│               │   └── pinecone.ts         # Pinecone vector index
+│               ├── validation/
+│               │   └── note.ts             # Zod validation schemas
+│               ├── auth.ts                 # Authentication helpers
+│               ├── openai.ts               # Google Gemini & embeddings
+│               ├── string.ts               # Vietnamese text utilities
+│               ├── embedding.ts            # Note embedding generation
+│               ├── chat.ts                 # Chat helper functions
+│               └── trialMode.ts            # Trial mode utilities
 ├── (frontend)/                # Frontend layer (route group)
 │   ├── (modules)/             # Feature modules
 │   │   ├── notes/
@@ -214,6 +242,16 @@ scripts/                       # Utility scripts
 - `route.ts` - HTTP handlers (GET, POST, PUT, DELETE)
 - `route.services.ts` - Business logic, database operations
 - `route.types.ts` - TypeScript interfaces and DTOs
+
+**Module Organization:**
+
+- All API endpoints under `/api/(modules)/` route group
+- **auth**: Authentication (NextAuth, signup)
+- **cron**: Scheduled jobs (cleanup old trial notes, health checks)
+- **chat**: AI chat with RAG pattern
+- **notes**: CRUD operations with semantic search
+- **trial**: Trial mode specific operations (data sync, cleanup)
+- **core/utils**: Shared backend utilities (database, validation, AI)
 
 **Example:**
 
