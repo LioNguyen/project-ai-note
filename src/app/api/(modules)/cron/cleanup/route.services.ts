@@ -17,7 +17,7 @@ export async function getOldTrialNotes(daysOld: number = 7) {
 
     // Query for trial notes using a dummy vector
     // Note: Pinecone requires a vector for query, even when filtering by metadata
-    const dummyVector = new Array(1536).fill(0); // OpenAI embedding dimension
+    const dummyVector = new Array(768).fill(0); // Google text-embedding-004 dimension
 
     const queryResponse = await notesIndex.query({
       vector: dummyVector,
