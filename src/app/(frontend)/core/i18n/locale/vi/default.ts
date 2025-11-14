@@ -213,6 +213,8 @@ const defaultTranslations = {
     limitReached: "Đã hết lượt chat",
     upgradeMessage: "Đã hết lượt chat. Đăng ký để tiếp tục.",
     remainingChats: "lượt chat còn lại",
+    aiAssistant: "Trợ Lý AI",
+    emptyStateSubtitle: "Hỏi tôi bất cứ điều gì về ghi chú của bạn",
   },
 } as const;
 

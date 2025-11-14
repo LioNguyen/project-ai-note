@@ -9,7 +9,7 @@ import TrialModeBanner from "@/app/(frontend)/core/components/molecules/TrialMod
 import AddEditNoteDialog from "./components/molecules/AddEditNoteDialog/AddEditNoteDialog";
 import DeleteConfirmDialog from "./components/molecules/DeleteConfirmDialog/DeleteConfirmDialog";
 import TrialLimitDialog from "./components/molecules/TrialLimitDialog/TrialLimitDialog";
-import AIChatBox from "./components/organisms/AIChatBox/AIChatBox";
+import ChatBot from "../(chat-bot)/components/organisms/ChatBot/ChatBot";
 import NotesGrid from "./components/organisms/NotesGrid/NotesGrid";
 import NotesGridClient from "./components/organisms/NotesGridClient/NotesGridClient";
 
@@ -66,7 +66,7 @@ export default async function NotesPage({
 
         <AddEditNoteDialog />
         <DeleteConfirmDialog />
-        <AIChatBox />
+        <ChatBot />
         <AuthenticatedUserSheet />
         <TrialLimitDialog />
       </>
@@ -80,7 +80,7 @@ export default async function NotesPage({
       <NotesGridClient initialQuery={query} initialSort={sortBy} />
       <AddEditNoteDialog />
       <DeleteConfirmDialog />
-      <AIChatBox />
+      <ChatBot />
       <TrialUserSheet />
       <TrialLimitDialog />
     </>

@@ -140,7 +140,7 @@ src/app/
 │   │   │   │   │   ├── ChatMessage/
 │   │   │   │   │   └── NoteCardSkeleton/
 │   │   │   │   └── organisms/
-│   │   │   │       ├── AIChatBox/
+│   │   │   │       ├── ChatBot/
 │   │   │   │       ├── Note/
 │   │   │   │       └── NotesGrid/
 │   │   │   └── stores/
@@ -282,7 +282,7 @@ export async function POST(req: Request) {
 
 - **Atoms**: Button, Input, Card, EmptyState, Switch
 - **Molecules**: SearchBox, LanguageSwitcher, AIChatButton
-- **Organisms**: NavBar, AIChatBox, NotesGrid
+- **Organisms**: NavBar, ChatBot, NotesGrid
 
 **Structure:** `ComponentName/ComponentName.tsx` + optional index.ts
 

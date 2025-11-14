@@ -22,7 +22,7 @@
 
 #### UI Components
 
-- **File:** `src/app/(frontend)/(modules)/notes/components/organisms/AIChatBox/AIChatBox.tsx`
+- **File:** `src/app/(frontend)/(modules)/notes/components/organisms/ChatBot/ChatBot.tsx`
 
   - Wrap `handleSubmit` để check và increment chat count
   - Disable input khi đạt limit
@@ -277,7 +277,7 @@ docs/TRIAL_MODE_UPDATES.md (this file)
 ```
 src/app/(frontend)/core/utils/trialMode.ts
 src/app/(frontend)/core/store/useTrialModeStore.ts
-src/app/(frontend)/(modules)/notes/components/organisms/AIChatBox/AIChatBox.tsx
+src/app/(frontend)/(modules)/notes/components/organisms/ChatBot/ChatBot.tsx
 src/app/(frontend)/core/components/molecules/TrialModeBanner/TrialModeBanner.tsx
 src/app/(frontend)/core/i18n/locale/en/default.ts
 src/app/(frontend)/core/i18n/locale/vi/default.ts

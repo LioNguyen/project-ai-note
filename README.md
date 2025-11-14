@@ -100,7 +100,7 @@ src/
 │   │   │   │   │   │   ├── ChatMessage/
 │   │   │   │   │   │   └── NoteCardSkeleton/
 │   │   │   │   │   └── organisms/
-│   │   │   │   │       ├── AIChatBox/
+│   │   │   │   │       ├── ChatBot/
 │   │   │   │   │       ├── Note/
 │   │   │   │   │       └── NotesGrid/
 │   │   │   │   └── stores/

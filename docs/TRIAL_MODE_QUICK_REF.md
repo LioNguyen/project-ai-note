@@ -91,7 +91,7 @@ Shows:
 - 📝 5/5 notes remaining
 - 💬 3/10 chats remaining
 
-### AIChatBox
+### ChatBot
 
 Automatically:
 

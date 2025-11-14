@@ -39,7 +39,7 @@ src/
 │   │   │           ├── molecules/
 │   │   │           │   └── AddEditNoteDialog/ (updated)
 │   │   │           └── organisms/
-│   │   │               ├── AIChatBox/ (updated)
+│   │   │               ├── ChatBot/ (updated)
 │   │   │               └── NotesGridClient/ (NEW)
 │   │   └── core/
 │   │       ├── components/

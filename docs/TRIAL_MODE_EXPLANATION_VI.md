@@ -194,7 +194,7 @@ Refresh store
 ```
 Người dùng nhập tin nhắn
     ↓
-[AIChatBox] Component
+[ChatBot] Component
     ↓
 useSession() → session.data?.user = null → NOT authenticated
     ↓
@@ -319,7 +319,7 @@ Hiển thị response trong chatbox
 
 ```
 ┌──────────────────────────────────────┐
-│  AIChatBox (Client)                  │
+│  ChatBot (Client)                  │
 │  - Người dùng gõ tin nhắn            │
 │  - Nhấn Send                         │
 └──────────────┬───────────────────────┘

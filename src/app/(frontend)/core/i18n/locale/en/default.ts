@@ -214,6 +214,8 @@ const defaultTranslations = {
     limitReached: "Chat limit reached",
     upgradeMessage: "Chat limit reached. Sign up to continue.",
     remainingChats: "chats remaining",
+    aiAssistant: "AI Assistant",
+    emptyStateSubtitle: "Ask me anything about your notes",
   },
 } as const;
 

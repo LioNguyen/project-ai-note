@@ -94,7 +94,7 @@ The Google Analytics scripts are loaded in the root layout using Next.js `Script
 
 #### Chat Events
 
-- **File**: `AIChatBox.tsx`
+- **File**: `ChatBot.tsx`
 - **Events**:
   - `trackChatMessage(isTrialMode)` - When a chat message is sent
   - Differentiates between trial and authenticated users

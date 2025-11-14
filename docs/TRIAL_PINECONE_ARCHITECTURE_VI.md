@@ -198,7 +198,7 @@ createTrialNote() in trialMode.ts
 [Frontend]
 User: "What about Python?"
     ↓
-AIChatBox sends:
+ChatBot sends:
 {
     messages: [...],
     trialNotes: [all trial notes from localStorage]
@@ -663,7 +663,7 @@ export function incrementTrialChatCount(): number | null {
 💬 3 / 10 chats remaining
 ```
 
-#### AIChatBox (khi đạt limit)
+#### ChatBot (khi đạt limit)
 
 ```tsx
 <Input
