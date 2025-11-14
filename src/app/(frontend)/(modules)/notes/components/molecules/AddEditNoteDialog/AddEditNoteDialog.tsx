@@ -39,13 +39,13 @@ import {
 } from "@/app/(frontend)/core/utils/analytics";
 import { useNoteDialogStore } from "../../../stores/useNoteDialogStore";
 import { useTrialLimitDialogStore } from "../../../stores/useTrialLimitDialogStore";
+import { useDeleteConfirmStore } from "../../../stores/useDeleteConfirmStore";
 
 export default function AddEditNoteDialog() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const axios = createAxios();
   const locale = useLocale();
   const t = locales[locale];
-  const [deleteInProgress, setDeleteInProgress] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -59,6 +59,7 @@ export default function AddEditNoteDialog() {
   const openTrialLimitDialog = useTrialLimitDialogStore(
     (state) => state.openDialog,
   );
+  const openDeleteDialog = useDeleteConfirmStore((state) => state.openDialog);
 
   const form = useForm<CreateNoteSchema>({
     resolver: zodResolver(createNoteSchema),
@@ -187,9 +188,13 @@ export default function AddEditNoteDialog() {
     }
   }
 
+  const handleDeleteClick = () => {
+    if (!noteToEdit) return;
+    openDeleteDialog(noteToEdit.id, noteToEdit.title, deleteNote);
+  };
+
   async function deleteNote() {
     if (!noteToEdit) return;
-    setDeleteInProgress(true);
     try {
       // Trial mode handling
       if (!session?.user) {
@@ -223,8 +228,6 @@ export default function AddEditNoteDialog() {
         type: "error",
       });
       throw new Error(err);
-    } finally {
-      setDeleteInProgress(false);
     }
   }
 
@@ -269,22 +272,20 @@ export default function AddEditNoteDialog() {
         footer={
           <div className="flex gap-2 sm:gap-0 sm:space-x-2">
             {noteToEdit && (
-              <LoadingButton
+              <Button
                 variant="destructive"
-                loading={deleteInProgress}
                 disabled={form.formState.isSubmitting}
-                onClick={deleteNote}
+                onClick={handleDeleteClick}
                 type="button"
               >
                 {t.notes.deleteNote}
-              </LoadingButton>
+              </Button>
             )}
             {(isEditing || !noteToEdit) && (
               <LoadingButton
                 type="submit"
                 form="note-form"
                 loading={form.formState.isSubmitting}
-                disabled={deleteInProgress}
               >
                 {t.notes.submit}
               </LoadingButton>
@@ -339,7 +340,7 @@ export default function AddEditNoteDialog() {
               <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {t.notes.noteContent}
               </div>
-              <div className="prose prose-sm dark:prose-invert max-w-none rounded-lg border bg-muted/30 p-4">
+              <div className="prose prose-sm dark:prose-invert max-w-none rounded-lg border bg-muted/30 p-4 [&>*]:my-2 [&>blockquote]:border-l-4 [&>blockquote]:border-primary [&>blockquote]:pl-4 [&>blockquote]:italic [&>code]:rounded [&>code]:bg-muted [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:text-xs [&>em]:italic [&>h1]:text-2xl [&>h1]:font-bold [&>h2]:text-xl [&>h2]:font-semibold [&>h3]:text-lg [&>h3]:font-medium [&>li]:text-sm [&>ol]:ml-4 [&>ol]:list-decimal [&>p]:text-sm [&>p]:leading-relaxed [&>pre]:rounded-md [&>pre]:bg-muted [&>pre]:p-3 [&>strong]:font-semibold [&>ul]:ml-4 [&>ul]:list-disc">
                 <ReactMarkdown>
                   {form.getValues("content") || "*No content*"}
                 </ReactMarkdown>

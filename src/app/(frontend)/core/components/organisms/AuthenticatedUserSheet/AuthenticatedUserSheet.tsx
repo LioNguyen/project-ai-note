@@ -34,43 +34,88 @@ export default function AuthenticatedUserSheet() {
       open={isOpen}
       onOpenChange={closeMenu}
       side="right"
-      title={t.auth.loginTitle}
+      title={
+        <div className="flex items-center gap-2.5">
+          <User className="h-5 w-5 text-primary" />
+          <span className="text-lg font-semibold">{t.auth.loginTitle}</span>
+        </div>
+      }
+      className="sm:max-w-[400px]"
     >
-      <div className="mt-6 space-y-4">
-        {/* User Profile */}
-        <div className="flex items-center gap-3 rounded-lg border p-4">
-          {session.user.image ? (
-            <Image
-              src={session.user.image}
-              alt={session.user.name || "User"}
-              width={48}
-              height={48}
-              className="rounded-full"
-            />
-          ) : (
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary">
-              <User className="h-6 w-6 text-primary-foreground" />
+      <div className="mt-6 space-y-6">
+        {/* User Profile Card */}
+        <div className="rounded-xl border bg-gradient-to-br from-background to-muted/20 p-5 shadow-sm transition-shadow hover:shadow-md">
+          <div className="flex flex-col items-center gap-3 text-center">
+            {/* Avatar */}
+            <div className="relative flex-shrink-0">
+              {session.user.image ? (
+                <div className="relative">
+                  <Image
+                    src={session.user.image}
+                    alt={session.user.name || "User"}
+                    width={64}
+                    height={64}
+                    className="rounded-full ring-2 ring-primary/10"
+                  />
+                  <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-background bg-green-500" />
+                </div>
+              ) : (
+                <div className="relative">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 ring-2 ring-primary/10">
+                    <User className="h-8 w-8 text-primary-foreground" />
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-background bg-green-500" />
+                </div>
+              )}
             </div>
-          )}
-          <div className="flex-1 overflow-hidden">
-            <p className="truncate font-medium">
-              {session.user.name || "User"}
-            </p>
-            <p className="truncate text-sm text-muted-foreground">
-              {session.user.email}
-            </p>
+
+            {/* User Info */}
+            <div className="w-full space-y-2">
+              <h3 className="truncate text-lg font-semibold leading-none">
+                {session.user.name || "User"}
+              </h3>
+              <div className="rounded-lg bg-muted/50 px-3 py-2">
+                <p className="truncate text-sm text-foreground">
+                  {session.user.email}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Sign Out Button */}
-        <Button
-          variant="destructive"
-          className="w-full justify-start"
-          onClick={handleSignOut}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          {t.auth.signOut}
-        </Button>
+        {/* Actions Section */}
+        <div className="space-y-2">
+          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            {locale === "vi" ? "Hành động" : "Actions"}
+          </div>
+
+          {/* Sign Out Button */}
+          <Button
+            variant="destructive"
+            className="w-full justify-start gap-2 shadow-sm transition-all hover:shadow-md"
+            onClick={handleSignOut}
+          >
+            <LogOut className="h-4 w-4" />
+            <span className="font-medium">{t.auth.signOut}</span>
+          </Button>
+        </div>
+
+        {/* Footer Info */}
+        <div className="rounded-lg border border-dashed border-muted-foreground/20 bg-muted/30 p-4">
+          <div className="flex items-start gap-3">
+            <span className="text-lg">💡</span>
+            <div className="flex-1 space-y-1">
+              <p className="text-xs font-medium text-foreground">
+                {locale === "vi" ? "Mẹo hữu ích" : "Pro Tip"}
+              </p>
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                {locale === "vi"
+                  ? "Bạn có thể sử dụng AI Chat để tìm kiếm và phân tích ghi chú của mình một cách thông minh."
+                  : "Use AI Chat to intelligently search and analyze your notes."}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </BaseSheet>
   );

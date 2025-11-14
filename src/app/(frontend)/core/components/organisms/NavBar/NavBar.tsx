@@ -39,8 +39,8 @@ export default function NavBar() {
     <div className="fixed left-0 right-0 top-0 z-50 bg-background p-4 shadow">
       <div className="m-auto mx-2 flex max-w-full flex-wrap items-center justify-between gap-3">
         <Link href="/notes" className="flex items-center gap-1">
-          <Image src={logo} alt="AI Note logo" width={40} height={40} />
-          <span className="font-bold">{t.navbar.appName}</span>
+          <Image src={logo} alt="AI Note logo" width={35} height={35} />
+          <span className="ml-1 font-bold">{t.navbar.appName}</span>
         </Link>
         <div className="flex items-center gap-3">
           {pathname?.startsWith("/notes") && (

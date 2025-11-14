@@ -29,6 +29,7 @@ export default function TrialUserSheet() {
       onOpenChange={closeMenu}
       side="right"
       title={t.navbar.appName}
+      className="sm:max-w-[400px]"
     >
       <div className="mt-6 space-y-6">
         {/* Trial Mode Badge */}

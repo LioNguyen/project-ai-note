@@ -7,13 +7,14 @@ import AuthenticatedUserSheet from "@/app/(frontend)/core/components/organisms/A
 import TrialUserSheet from "@/app/(frontend)/core/components/organisms/TrialUserSheet/TrialUserSheet";
 import TrialModeBanner from "@/app/(frontend)/core/components/molecules/TrialModeBanner/TrialModeBanner";
 import AddEditNoteDialog from "./components/molecules/AddEditNoteDialog/AddEditNoteDialog";
+import DeleteConfirmDialog from "./components/molecules/DeleteConfirmDialog/DeleteConfirmDialog";
 import TrialLimitDialog from "./components/molecules/TrialLimitDialog/TrialLimitDialog";
 import AIChatBox from "./components/organisms/AIChatBox/AIChatBox";
 import NotesGrid from "./components/organisms/NotesGrid/NotesGrid";
 import NotesGridClient from "./components/organisms/NotesGridClient/NotesGridClient";
 
 export const metadata: Metadata = {
-  title: "Lio | AI Notes",
+  title: "AI Note",
 };
 
 // Force dynamic rendering - always fetch fresh data
@@ -64,6 +65,7 @@ export default async function NotesPage({
         />
 
         <AddEditNoteDialog />
+        <DeleteConfirmDialog />
         <AIChatBox />
         <AuthenticatedUserSheet />
         <TrialLimitDialog />
@@ -77,6 +79,7 @@ export default async function NotesPage({
       <TrialModeBanner />
       <NotesGridClient initialQuery={query} initialSort={sortBy} />
       <AddEditNoteDialog />
+      <DeleteConfirmDialog />
       <AIChatBox />
       <TrialUserSheet />
       <TrialLimitDialog />
