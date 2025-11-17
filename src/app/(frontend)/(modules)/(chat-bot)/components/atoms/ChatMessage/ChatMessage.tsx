@@ -27,7 +27,7 @@ export default function ChatMessage({
   return (
     <div
       className={cn(
-        "mb-4 flex items-end gap-2 duration-300 animate-in fade-in slide-in-from-bottom-2",
+        "mb-6 flex items-end gap-2 duration-300 animate-in fade-in slide-in-from-bottom-2",
         isAiMessage ? "justify-start" : "justify-end",
       )}
     >

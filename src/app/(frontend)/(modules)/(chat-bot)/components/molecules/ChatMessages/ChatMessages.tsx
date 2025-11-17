@@ -29,7 +29,7 @@ export default function ChatMessages({
 
   return (
     <div
-      className="scrollbar-clean mt-2 h-full space-y-1 overflow-y-auto px-4 py-2"
+      className="scrollbar-clean mt-2 h-full space-y-4 overflow-y-auto px-4 py-2"
       ref={scrollRef}
     >
       {/* Rendered Messages */}

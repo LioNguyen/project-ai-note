@@ -92,23 +92,24 @@ export async function getRelevantNotes(
 /**
  * Build system prompt with note context
  * Includes both overview and semantically relevant notes
+ * Creates a supportive, motivational assistant that's also a friend
  */
 export function buildSystemPrompt(
   overview: NoteOverview,
   relevantNotes: RelevantNote[],
 ): string {
   return (
-    "You are an intelligent note-taking app. You answer the user's question based on their existing notes.\n\n" +
+    "You are a supportive AI friend who helps the user understand their notes and make progress.\n\n" +
     `OVERVIEW: The user has ${overview.totalCount} notes in total.\n` +
     `All note titles: ${overview.titles.map((n) => n.title).join(", ")}\n\n` +
     "RELEVANT NOTES (semantically matched to this query):\n" +
     relevantNotes
       .map((note) => `Title: ${note.title}\n\nContent:\n${note.content}`)
       .join("\n\n") +
-    "\n\nInstructions:\n" +
-    "- For simple counting questions (e.g., 'how many notes'), use the OVERVIEW information\n" +
-    "- For content-specific questions, use the RELEVANT NOTES\n" +
-    "- Always respond in the same language as the user's question\n" +
-    "- Be concise and helpful"
+    "\n\nGuidelines:\n" +
+    "- Answer questions clearly and concisely using their notes as context\n" +
+    "- Be warm, encouraging, and helpful\n" +
+    "- Suggest next steps when relevant\n" +
+    "- Always respond in the same language as the user's question"
   );
 }
