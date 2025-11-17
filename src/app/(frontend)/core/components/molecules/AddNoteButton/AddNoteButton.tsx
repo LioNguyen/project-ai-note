@@ -5,8 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
 import { useNoteDialogStore } from "@/app/(frontend)/(modules)/notes/stores/useNoteDialogStore";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
-import { locales } from "@/app/(frontend)/core/i18n";
+import { useTranslation } from "react-i18next";
 
 /**
  * Add Note Button Component
@@ -21,11 +20,8 @@ import { locales } from "@/app/(frontend)/core/i18n";
  */
 export default function AddNoteButton() {
   const pathname = usePathname();
-  const locale = useLocale();
   const openDialog = useNoteDialogStore((state) => state.openDialog);
-
-  // Get translations for current locale
-  const t = locales[locale];
+  const { t } = useTranslation();
 
   // Only show on notes page
   if (!pathname?.startsWith("/notes")) {
@@ -39,7 +35,7 @@ export default function AddNoteButton() {
   return (
     <Button onClick={handleAddNote} size="sm" className="h-8 px-2.5">
       <Plus size={14} className="mr-1" />
-      <span className="text-xs">{t.navbar.addNote}</span>
+      <span className="text-xs">{t("navbar.addNote")}</span>
     </Button>
   );
 }

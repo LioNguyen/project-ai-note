@@ -1,16 +1,14 @@
 "use client";
 
 import { Bot } from "lucide-react";
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTranslation } from "react-i18next";
 
 /**
  * ChatHeader Component
  * Displays the header section of the chat with branding and status indicator
  */
 export default function ChatHeader() {
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
 
   return (
     <div className="flex items-center justify-between rounded-t-2xl border-b border-primary/10 bg-gradient-to-r from-primary/5 to-transparent px-4 py-4">
@@ -23,9 +21,11 @@ export default function ChatHeader() {
         {/* Header Text */}
         <div className="flex flex-col">
           <h3 className="text-sm font-semibold text-foreground">
-            {t.chat.title}
+            {t("chat.title")}
           </h3>
-          <p className="text-xs text-muted-foreground">{t.chat.aiAssistant}</p>
+          <p className="text-xs text-muted-foreground">
+            {t("chat.aiAssistant")}
+          </p>
         </div>
       </div>
 

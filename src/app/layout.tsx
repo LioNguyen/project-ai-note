@@ -6,6 +6,7 @@ import Script from "next/script";
 import "react-toastify/dist/ReactToastify.css";
 import { SessionProvider } from "./SessionProvider";
 import { ThemeProvider } from "./ThemeProvider";
+import { I18nProvider } from "./(frontend)/core/i18n/I18nProvider";
 import TrialDataCleaner from "./(frontend)/core/components/molecules/TrialDataCleaner/TrialDataCleaner";
 import { GA_MEASUREMENT_ID } from "./(frontend)/core/utils/analytics";
 import "./globals.css";
@@ -52,22 +53,24 @@ export default function RootLayout({
       <body className={inter.className}>
         <SessionProvider>
           <ThemeProvider attribute="class">
-            <TrialDataCleaner />
-            {children}
-            <ToastContainer
-              position="bottom-right"
-              autoClose={2000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="dark"
-              toastClassName="!bg-card !text-card-foreground !border !border-border !shadow-lg"
-              bodyClassName="text-sm"
-            />
+            <I18nProvider>
+              <TrialDataCleaner />
+              {children}
+              <ToastContainer
+                position="bottom-right"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+                toastClassName="!bg-card !text-card-foreground !border !border-border !shadow-lg"
+                bodyClassName="text-sm"
+              />
+            </I18nProvider>
           </ThemeProvider>
         </SessionProvider>
       </body>

@@ -1,8 +1,7 @@
 "use client";
 
 import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTranslation } from "react-i18next";
 
 interface GoogleAuthButtonProps {
   onClick: () => void;
@@ -17,8 +16,7 @@ export default function GoogleAuthButton({
   onClick,
   disabled,
 }: GoogleAuthButtonProps) {
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
 
   return (
     <Button
@@ -46,7 +44,7 @@ export default function GoogleAuthButton({
           d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
         />
       </svg>
-      {t.auth.continueWithGoogle}
+      {t("auth.continueWithGoogle")}
     </Button>
   );
 }

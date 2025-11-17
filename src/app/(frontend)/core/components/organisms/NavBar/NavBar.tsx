@@ -9,8 +9,7 @@ import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
 import AddNoteButton from "@/app/(frontend)/core/components/molecules/AddNoteButton/AddNoteButton";
 import LanguageSwitcher from "@/app/(frontend)/core/components/molecules/LanguageSwitcher/LanguageSwitcher";
 import ThemeToggleButton from "@/app/(frontend)/core/components/molecules/ThemeToggleButton/ThemeToggleButton";
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTranslation } from "react-i18next";
 import { useUserMenuStore } from "@/app/(frontend)/core/store/useUserMenuStore";
 import logo from "@/app/shared/assets/logo.png";
 
@@ -19,19 +18,16 @@ import logo from "@/app/shared/assets/logo.png";
  * Displays app navigation with user profile and actions
  */
 export default function NavBar() {
-  const locale = useLocale();
+  const { t } = useTranslation();
   const openUserMenu = useUserMenuStore((state) => state.openMenu);
   const { data: session } = useSession();
-
-  // Get translations for current locale
-  const t = locales[locale];
 
   return (
     <div className="fixed left-0 right-0 top-0 z-50 bg-background p-4 shadow">
       <div className="m-auto mx-2 flex max-w-full flex-wrap items-center justify-between gap-3">
         <Link href="/notes" className="flex items-center gap-1">
           <Image src={logo} alt="AI Note logo" width={35} height={35} />
-          <span className="ml-1 font-bold">{t.navbar.appName}</span>
+          <span className="ml-1 font-bold">{t("navbar.appName")}</span>
         </Link>
         <div className="flex items-center gap-3">
           <AddNoteButton />

@@ -29,7 +29,7 @@ import { Textarea } from "@/app/(frontend)/core/components/atoms/Textarea/Textar
 import BaseSheet from "@/app/(frontend)/core/components/molecules/BaseSheet/BaseSheet";
 import BaseDialog from "@/app/(frontend)/core/components/molecules/BaseDialog/BaseDialog";
 import ContentSkeleton from "../../atoms/ContentSkeleton/ContentSkeleton";
-import { locales } from "@/app/(frontend)/core/i18n";
+import { useTranslation } from "react-i18next";
 import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
 import { useTrialModeStore } from "@/app/(frontend)/core/store/useTrialModeStore";
 import { createAxios } from "@/app/(frontend)/core/utils/api";
@@ -44,8 +44,8 @@ import { useDeleteConfirmStore } from "../../../stores/useDeleteConfirmStore";
 export default function AddEditNoteDialog() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const axios = createAxios();
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
+  const locale = useLocale(); // Keep for locale-specific conditional rendering
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -154,7 +154,7 @@ export default function AddEditNoteDialog() {
         trialStore.loadNotes();
         router.refresh();
         closeDialog();
-        toast.success(t.notes.successfully);
+        toast.success(t("notes.successfully"));
         return;
       }
 
@@ -179,9 +179,9 @@ export default function AddEditNoteDialog() {
 
       router.refresh();
       closeDialog();
-      toast.success(t.notes.successfully);
+      toast.success(t("notes.successfully"));
     } catch (err: any) {
-      toast.error(t.notes.somethingWentWrong, {
+      toast.error(t("notes.somethingWentWrong"), {
         type: "error",
       });
       throw new Error(err);
@@ -208,7 +208,7 @@ export default function AddEditNoteDialog() {
         trackNoteDeleted(true);
         router.refresh();
         closeDialog();
-        toast.success(t.notes.deleteSuccessfully);
+        toast.success(t("notes.deleteSuccessfully"));
         return;
       }
 
@@ -222,9 +222,9 @@ export default function AddEditNoteDialog() {
       trackNoteDeleted(false);
       router.refresh();
       closeDialog();
-      toast.success(t.notes.deleteSuccessfully);
+      toast.success(t("notes.deleteSuccessfully"));
     } catch (err: any) {
-      toast.error(t.notes.somethingWentWrong, {
+      toast.error(t("notes.somethingWentWrong"), {
         type: "error",
       });
       throw new Error(err);
@@ -237,18 +237,18 @@ export default function AddEditNoteDialog() {
       <BaseDialog
         open={showConfirmDialog}
         onOpenChange={setShowConfirmDialog}
-        title={t.dialog.unsavedChangesTitle}
-        description={t.dialog.unsavedChangesDescription}
+        title={t("dialog.unsavedChangesTitle")}
+        description={t("dialog.unsavedChangesDescription")}
         footer={
           <>
             <Button
               variant="outline"
               onClick={() => setShowConfirmDialog(false)}
             >
-              {t.dialog.continueEditing}
+              {t("dialog.continueEditing")}
             </Button>
             <Button variant="destructive" onClick={confirmClose}>
-              {t.dialog.discardChanges}
+              {t("dialog.discardChanges")}
             </Button>
           </>
         }
@@ -265,7 +265,7 @@ export default function AddEditNoteDialog() {
               <FilePlus className="h-5 w-5 text-primary" />
             )}
             <span className="text-lg font-semibold">
-              {noteToEdit ? t.notes.editNote : t.notes.addNote}
+              {noteToEdit ? t("notes.editNote") : t("notes.addNote")}
             </span>
           </div>
         }
@@ -278,7 +278,7 @@ export default function AddEditNoteDialog() {
                 onClick={handleDeleteClick}
                 type="button"
               >
-                {t.notes.deleteNote}
+                {t("notes.deleteNote")}
               </Button>
             )}
             {(isEditing || !noteToEdit) && (
@@ -287,7 +287,7 @@ export default function AddEditNoteDialog() {
                 form="note-form"
                 loading={form.formState.isSubmitting}
               >
-                {t.notes.submit}
+                {t("notes.submit")}
               </LoadingButton>
             )}
           </div>
@@ -315,7 +315,7 @@ export default function AddEditNoteDialog() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  {t.notes.noteTitle}
+                  {t("notes.noteTitle")}
                 </div>
                 <Button
                   variant="outline"
@@ -325,7 +325,7 @@ export default function AddEditNoteDialog() {
                   className="h-8 gap-1.5"
                 >
                   <Pencil className="h-3.5 w-3.5" />
-                  <span className="text-xs">{t.notes.editMode}</span>
+                  <span className="text-xs">{t("notes.editMode")}</span>
                 </Button>
               </div>
               <div className="border-l-4 border-primary py-1 pl-4">
@@ -338,7 +338,7 @@ export default function AddEditNoteDialog() {
             {/* Content Section */}
             <div className="space-y-2">
               <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                {t.notes.noteContent}
+                {t("notes.noteContent")}
               </div>
               <div className="prose prose-sm dark:prose-invert max-w-none rounded-lg border bg-muted/30 p-4 [&>*]:my-2 [&>blockquote]:border-l-4 [&>blockquote]:border-primary [&>blockquote]:pl-4 [&>blockquote]:italic [&>code]:rounded [&>code]:bg-muted [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:text-xs [&>em]:italic [&>h1]:text-2xl [&>h1]:font-bold [&>h2]:text-xl [&>h2]:font-semibold [&>h3]:text-lg [&>h3]:font-medium [&>li]:text-sm [&>ol]:ml-4 [&>ol]:list-decimal [&>p]:text-sm [&>p]:leading-relaxed [&>pre]:rounded-md [&>pre]:bg-muted [&>pre]:p-3 [&>strong]:font-semibold [&>ul]:ml-4 [&>ul]:list-disc">
                 <ReactMarkdown>
@@ -363,7 +363,7 @@ export default function AddEditNoteDialog() {
                   <FormItem>
                     <div className="flex items-center justify-between">
                       <FormLabel className="text-sm font-medium">
-                        {t.notes.noteTitle}
+                        {t("notes.noteTitle")}
                       </FormLabel>
                       {noteToEdit && (
                         <Button
@@ -374,13 +374,15 @@ export default function AddEditNoteDialog() {
                           className="h-8 gap-1.5"
                         >
                           <Eye className="h-3.5 w-3.5" />
-                          <span className="text-xs">{t.notes.previewMode}</span>
+                          <span className="text-xs">
+                            {t("notes.previewMode")}
+                          </span>
                         </Button>
                       )}
                     </div>
                     <FormControl>
                       <Input
-                        placeholder={t.notes.titlePlaceholder}
+                        placeholder={t("notes.titlePlaceholder")}
                         {...field}
                         className="h-11 text-base focus-visible:ring-primary"
                       />
@@ -397,11 +399,11 @@ export default function AddEditNoteDialog() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      {t.notes.noteContent}
+                      {t("notes.noteContent")}
                     </FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder={t.notes.contentPlaceholder}
+                        placeholder={t("notes.contentPlaceholder")}
                         {...field}
                         rows={16}
                         className="scrollbar-clean resize-none text-sm leading-relaxed focus-visible:ring-primary"

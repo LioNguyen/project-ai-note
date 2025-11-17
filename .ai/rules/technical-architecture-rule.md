@@ -450,10 +450,14 @@ export const useLanguageStore = create<LanguageState>()(
 export const useLocale = () => useLanguageStore((state) => state.locale);
 export const useSetLocale = () => useLanguageStore((state) => state.setLocale);
 
-// Usage in components
-const locale = useLocale();
-const t = locales[locale];
+// Usage in components - use useTranslation hook
+import { useTranslation } from "@/app/(frontend)/core/i18n";
+
+const t = useTranslation();
 return <h1>{t.navbar.appName}</h1>;
+
+// Keep useLocale() only for locale-specific conditional rendering
+const locale = useLocale(); // For conditionals like: locale === "vi" ? "Vietnamese text" : "English text"
 ```
 
 ## 4. Component & Code Standards

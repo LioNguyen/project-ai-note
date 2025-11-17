@@ -3,8 +3,7 @@
 import { Trash } from "lucide-react";
 import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
 import { Input } from "@/app/(frontend)/core/components/atoms/Input/Input";
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTranslation } from "react-i18next";
 import TrialModeIndicator from "../../atoms/TrialModeIndicator/TrialModeIndicator";
 
 interface ChatInputFormProps {
@@ -34,8 +33,7 @@ export default function ChatInputForm({
   onSubmit,
   onClear,
 }: ChatInputFormProps) {
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
 
   return (
     <div className="rounded-b-2xl border-t border-primary/10 bg-gradient-to-t from-background to-transparent px-4 py-3">
@@ -43,7 +41,7 @@ export default function ChatInputForm({
       <form onSubmit={onSubmit} className="flex gap-1.5">
         {/* Clear Button */}
         <Button
-          title={t.chat.clearChat}
+          title={t("chat.clearChat")}
           variant="outline"
           size="icon"
           className="shrink-0 rounded-lg transition-colors hover:border-primary/30 hover:bg-primary/10"
@@ -59,8 +57,8 @@ export default function ChatInputForm({
           onChange={onInputChange}
           placeholder={
             isTrialMode && hasReachedLimit
-              ? t.chat.limitReached
-              : t.chat.placeholder
+              ? t("chat.limitReached")
+              : t("chat.placeholder")
           }
           ref={inputRef}
           disabled={isTrialMode && hasReachedLimit}
@@ -76,7 +74,7 @@ export default function ChatInputForm({
           {isLoading ? (
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/20 border-t-primary-foreground" />
           ) : (
-            t.chat.send
+            t("chat.send")
           )}
         </Button>
       </form>

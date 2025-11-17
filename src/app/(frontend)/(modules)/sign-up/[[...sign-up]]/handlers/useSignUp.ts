@@ -4,8 +4,7 @@ import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
 import { trackSignUp } from "@/app/(frontend)/core/utils/analytics";
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTranslation } from "react-i18next";
 
 interface SignUpFormData {
   name: string;
@@ -20,8 +19,7 @@ interface SignUpFormData {
  */
 export function useSignUp() {
   const router = useRouter();
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
 
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<SignUpFormData>({
@@ -40,13 +38,13 @@ export function useSignUp() {
 
       // Validate passwords match
       if (formData.password !== formData.confirmPassword) {
-        toast.error(t.auth.passwordsDoNotMatch);
+        toast.error(t("auth.passwordsDoNotMatch"));
         return;
       }
 
       // Validate password length
       if (formData.password.length < 6) {
-        toast.error(t.auth.passwordTooShort);
+        toast.error(t("auth.passwordTooShort"));
         return;
       }
 
@@ -67,12 +65,12 @@ export function useSignUp() {
         const data = await response.json();
 
         if (!response.ok) {
-          toast.error(data.error || t.auth.signUpFailed);
+          toast.error(data.error || t("auth.signUpFailed"));
           return;
         }
 
         // Account created, now sign in
-        toast.success(t.auth.accountCreatedSuccess);
+        toast.success(t("auth.accountCreatedSuccess"));
 
         const result = await signIn("credentials", {
           email: formData.email,
@@ -89,13 +87,13 @@ export function useSignUp() {
           router.refresh();
         }
       } catch (error) {
-        toast.error(t.auth.errorOccurred);
+        toast.error(t("auth.errorOccurred"));
         console.error("Sign up error:", error);
       } finally {
         setIsLoading(false);
       }
     },
-    [formData, router, t.auth],
+    [formData, router, t],
   );
 
   /**
@@ -108,11 +106,11 @@ export function useSignUp() {
       trackSignUp("google");
       await signIn("google", { callbackUrl: "/notes" });
     } catch (error) {
-      toast.error(t.auth.errorOccurred);
+      toast.error(t("auth.errorOccurred"));
       console.error("Google sign up error:", error);
       setIsLoading(false);
     }
-  }, [t.auth]);
+  }, [t]);
 
   /**
    * Update form field value

@@ -13,14 +13,12 @@ import { Sparkles } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
 import BaseDialog from "@/app/(frontend)/core/components/molecules/BaseDialog/BaseDialog";
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTranslation } from "react-i18next";
 import { trackTrialLimitReached } from "@/app/(frontend)/core/utils/analytics";
 import { useTrialLimitDialogStore } from "../../../stores/useTrialLimitDialogStore";
 
 export default function TrialLimitDialog() {
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
   const isOpen = useTrialLimitDialogStore((state) => state.isOpen);
   const closeDialog = useTrialLimitDialogStore((state) => state.closeDialog);
 
@@ -34,7 +32,7 @@ export default function TrialLimitDialog() {
   const title = (
     <div className="flex items-center gap-2 text-xl">
       <Sparkles className="text-primary" />
-      {t.trial.limitReachedTitle}
+      {t("trial.limitReachedTitle")}
     </div>
   );
 
@@ -43,7 +41,7 @@ export default function TrialLimitDialog() {
       open={isOpen}
       onOpenChange={closeDialog}
       title={title}
-      description={t.trial.limitReachedDescription}
+      description={t("trial.limitReachedDescription")}
       className="sm:max-w-md"
       footer={
         <>
@@ -52,24 +50,24 @@ export default function TrialLimitDialog() {
             onClick={closeDialog}
             className="w-full sm:w-auto"
           >
-            {t.trial.maybeLater}
+            {t("trial.maybeLater")}
           </Button>
           <Button asChild className="w-full sm:w-auto">
             <Link href="/sign-up" onClick={closeDialog}>
               <Sparkles className="mr-2 h-4 w-4" />
-              {t.trial.signUpFree}
+              {t("trial.signUpFree")}
             </Link>
           </Button>
         </>
       }
     >
       <div className="my-4 space-y-3 rounded-lg bg-primary/10 p-4">
-        <h4 className="font-semibold">{t.trial.premiumFeatures}</h4>
+        <h4 className="font-semibold">{t("trial.premiumFeatures")}</h4>
         <ul className="space-y-2 text-sm">
-          <li>✅ {t.trial.benefitUnlimitedNotes}</li>
-          <li>✅ {t.trial.benefitUnlimitedChat}</li>
-          <li>✅ {t.trial.benefitAiSearch}</li>
-          <li>✅ {t.trial.benefitSecure}</li>
+          <li>✅ {t("trial.benefitUnlimitedNotes")}</li>
+          <li>✅ {t("trial.benefitUnlimitedChat")}</li>
+          <li>✅ {t("trial.benefitAiSearch")}</li>
+          <li>✅ {t("trial.benefitSecure")}</li>
         </ul>
       </div>
     </BaseDialog>

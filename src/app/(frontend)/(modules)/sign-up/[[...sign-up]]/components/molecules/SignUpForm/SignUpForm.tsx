@@ -2,8 +2,7 @@
 
 import { Input } from "@/app/(frontend)/core/components/atoms/Input/Input";
 import { Label } from "@/app/(frontend)/core/components/atoms/Label/Label";
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTranslation } from "react-i18next";
 
 type SignUpFormData = {
   name: string;
@@ -25,18 +24,17 @@ export default function SignUpForm({
   formData,
   onUpdateFormData,
 }: SignUpFormProps) {
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
 
   return (
     <div className="grid gap-4">
       {/* Name Field */}
       <div className="grid gap-2">
-        <Label htmlFor="name">{t.auth.name}</Label>
+        <Label htmlFor="name">{t("auth.name")}</Label>
         <Input
           id="name"
           type="text"
-          placeholder={t.auth.namePlaceholder}
+          placeholder={t("auth.namePlaceholder")}
           value={formData.name}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             onUpdateFormData("name", e.target.value)
@@ -47,11 +45,11 @@ export default function SignUpForm({
 
       {/* Email Field */}
       <div className="grid gap-2">
-        <Label htmlFor="email">{t.auth.email}</Label>
+        <Label htmlFor="email">{t("auth.email")}</Label>
         <Input
           id="email"
           type="email"
-          placeholder={t.auth.emailPlaceholder}
+          placeholder={t("auth.emailPlaceholder")}
           value={formData.email}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             onUpdateFormData("email", e.target.value)
@@ -62,11 +60,11 @@ export default function SignUpForm({
 
       {/* Password Field */}
       <div className="grid gap-2">
-        <Label htmlFor="password">{t.auth.password}</Label>
+        <Label htmlFor="password">{t("auth.password")}</Label>
         <Input
           id="password"
           type="password"
-          placeholder={t.auth.passwordPlaceholder}
+          placeholder={t("auth.passwordPlaceholder")}
           value={formData.password}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             onUpdateFormData("password", e.target.value)
@@ -77,11 +75,11 @@ export default function SignUpForm({
 
       {/* Confirm Password Field */}
       <div className="grid gap-2">
-        <Label htmlFor="confirmPassword">{t.auth.confirmPassword}</Label>
+        <Label htmlFor="confirmPassword">{t("auth.confirmPassword")}</Label>
         <Input
           id="confirmPassword"
           type="password"
-          placeholder={t.auth.passwordPlaceholder}
+          placeholder={t("auth.passwordPlaceholder")}
           value={formData.confirmPassword}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             onUpdateFormData("confirmPassword", e.target.value)

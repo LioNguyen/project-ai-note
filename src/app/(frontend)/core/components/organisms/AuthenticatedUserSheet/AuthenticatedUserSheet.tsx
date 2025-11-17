@@ -6,7 +6,7 @@ import Image from "next/image";
 
 import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
 import BaseSheet from "@/app/(frontend)/core/components/molecules/BaseSheet/BaseSheet";
-import { locales } from "@/app/(frontend)/core/i18n";
+import { useTranslation } from "react-i18next";
 import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
 import { useUserMenuStore } from "@/app/(frontend)/core/store/useUserMenuStore";
 
@@ -16,8 +16,8 @@ import { useUserMenuStore } from "@/app/(frontend)/core/store/useUserMenuStore";
  */
 export default function AuthenticatedUserSheet() {
   const { data: session } = useSession();
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
+  const locale = useLocale(); // Keep for locale-specific conditional rendering
   const isOpen = useUserMenuStore((state) => state.isOpen);
   const closeMenu = useUserMenuStore((state) => state.closeMenu);
 
@@ -37,7 +37,7 @@ export default function AuthenticatedUserSheet() {
       title={
         <div className="flex items-center gap-2.5">
           <User className="h-5 w-5 text-primary" />
-          <span className="text-lg font-semibold">{t.auth.loginTitle}</span>
+          <span className="text-lg font-semibold">{t("auth.loginTitle")}</span>
         </div>
       }
       className="sm:max-w-[400px]"
@@ -96,7 +96,7 @@ export default function AuthenticatedUserSheet() {
             onClick={handleSignOut}
           >
             <LogOut className="h-4 w-4" />
-            <span className="font-medium">{t.auth.signOut}</span>
+            <span className="font-medium">{t("auth.signOut")}</span>
           </Button>
         </div>
 

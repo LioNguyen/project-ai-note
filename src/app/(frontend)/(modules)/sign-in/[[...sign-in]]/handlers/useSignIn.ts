@@ -5,8 +5,7 @@ import { toast } from "react-toastify";
 
 import { trackSignIn } from "@/app/(frontend)/core/utils/analytics";
 import { clearAllTrialData } from "@/app/(frontend)/core/utils/trialMode";
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTranslation } from "react-i18next";
 
 interface SignInFormData {
   email: string;
@@ -19,8 +18,7 @@ interface SignInFormData {
  */
 export function useSignIn() {
   const router = useRouter();
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
 
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<SignInFormData>({
@@ -51,18 +49,18 @@ export function useSignIn() {
 
           // Track successful sign in
           trackSignIn("email");
-          toast.success(t.auth.loginSuccess);
+          toast.success(t("auth.loginSuccess"));
           router.push("/notes");
           router.refresh();
         }
       } catch (error) {
-        toast.error(t.auth.errorOccurred);
+        toast.error(t("auth.errorOccurred"));
         console.error("Sign in error:", error);
       } finally {
         setIsLoading(false);
       }
     },
-    [formData.email, formData.password, router, t.auth],
+    [formData.email, formData.password, router, t],
   );
 
   /**
@@ -75,11 +73,11 @@ export function useSignIn() {
       trackSignIn("google");
       await signIn("google", { callbackUrl: "/notes" });
     } catch (error) {
-      toast.error(t.auth.errorOccurred);
+      toast.error(t("auth.errorOccurred"));
       console.error("Google sign in error:", error);
       setIsLoading(false);
     }
-  }, [t.auth]);
+  }, [t]);
 
   /**
    * Update form field value

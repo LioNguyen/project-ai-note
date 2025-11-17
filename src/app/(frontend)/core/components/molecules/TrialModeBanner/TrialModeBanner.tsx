@@ -16,12 +16,10 @@ import {
   TRIAL_NOTE_LIMIT,
   TRIAL_CHAT_LIMIT,
 } from "@/app/(frontend)/core/utils/trialMode";
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTranslation } from "react-i18next";
 
 export default function TrialModeBanner() {
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
   const {
     isTrialMode,
     remainingNotes,
@@ -52,30 +50,30 @@ export default function TrialModeBanner() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <span className="font-semibold">🎯 {t.trial.trialMode}</span>
+            <span className="font-semibold">🎯 {t("trial.trialMode")}</span>
           </div>
           <div className="flex flex-wrap gap-3 text-sm">
             <span>
               {hasReachedLimit ? (
                 <span className="font-medium text-destructive">
-                  {t.trial.noteLimitReached}
+                  {t("trial.noteLimitReached")}
                 </span>
               ) : (
                 <>
                   📝 {remainingNotes} / {TRIAL_NOTE_LIMIT}{" "}
-                  {t.trial.notesRemaining}
+                  {t("trial.notesRemaining")}
                 </>
               )}
             </span>
             <span>
               {hasReachedChatLimit ? (
                 <span className="font-medium text-destructive">
-                  {t.trial.chatLimitReached}
+                  {t("trial.chatLimitReached")}
                 </span>
               ) : (
                 <>
                   💬 {remainingChats} / {TRIAL_CHAT_LIMIT}{" "}
-                  {t.trial.chatsRemaining}
+                  {t("trial.chatsRemaining")}
                 </>
               )}
             </span>
@@ -84,7 +82,7 @@ export default function TrialModeBanner() {
 
         <div className="flex items-center gap-3">
           <span className="hidden text-sm text-muted-foreground sm:inline">
-            {t.trial.signUpForUnlimited}
+            {t("trial.signUpForUnlimited")}
           </span>
           <Button
             asChild
@@ -93,7 +91,7 @@ export default function TrialModeBanner() {
               hasReachedLimit || hasReachedChatLimit ? "destructive" : "default"
             }
           >
-            <Link href="/sign-up">{t.trial.signUp}</Link>
+            <Link href="/sign-up">{t("trial.signUp")}</Link>
           </Button>
         </div>
       </div>

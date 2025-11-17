@@ -1,15 +1,13 @@
 "use client";
 
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTranslation } from "react-i18next";
 
 /**
  * AuthDivider Component
  * Displays 'Or continue with' divider for authentication forms
  */
 export default function AuthDivider() {
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
 
   return (
     <div className="relative">
@@ -18,7 +16,7 @@ export default function AuthDivider() {
       </div>
       <div className="relative flex justify-center text-xs uppercase">
         <span className="bg-background px-2 text-muted-foreground">
-          {t.auth.orContinueWith}
+          {t("auth.orContinueWith")}
         </span>
       </div>
     </div>

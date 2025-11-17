@@ -2,8 +2,7 @@
 
 import { Bot } from "lucide-react";
 import { Message } from "ai";
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTranslation } from "react-i18next";
 import ChatMessage from "../../atoms/ChatMessage/ChatMessage";
 import LoadingIndicator from "../../atoms/LoadingIndicator/LoadingIndicator";
 
@@ -26,8 +25,7 @@ export default function ChatMessages({
   lastMessageIsUser,
   scrollRef,
 }: ChatMessagesProps) {
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
 
   return (
     <div
@@ -58,7 +56,7 @@ export default function ChatMessages({
         <ChatMessage
           message={{
             role: "assistant",
-            content: t.chat.errorMessage,
+            content: t("chat.errorMessage"),
           }}
         />
       )}
@@ -71,10 +69,10 @@ export default function ChatMessages({
           </div>
           <div className="space-y-1">
             <p className="text-sm font-medium text-foreground">
-              {t.chat.askQuestion}
+              {t("chat.askQuestion")}
             </p>
             <p className="text-xs text-muted-foreground">
-              {t.chat.emptyStateSubtitle}
+              {t("chat.emptyStateSubtitle")}
             </p>
           </div>
         </div>

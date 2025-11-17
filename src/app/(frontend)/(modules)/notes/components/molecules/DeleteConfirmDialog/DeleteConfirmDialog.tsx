@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
 import BaseDialog from "@/app/(frontend)/core/components/molecules/BaseDialog/BaseDialog";
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTranslation } from "react-i18next";
 import { useDeleteConfirmStore } from "../../../stores/useDeleteConfirmStore";
 
 /**
@@ -14,8 +13,7 @@ import { useDeleteConfirmStore } from "../../../stores/useDeleteConfirmStore";
  */
 export default function DeleteConfirmDialog() {
   const [isDeleting, setIsDeleting] = useState(false);
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
 
   const isOpen = useDeleteConfirmStore((state) => state.isOpen);
   const noteTitle = useDeleteConfirmStore((state) => state.noteTitle);
@@ -46,23 +44,23 @@ export default function DeleteConfirmDialog() {
     <BaseDialog
       open={isOpen}
       onOpenChange={handleClose}
-      title={t.notes.deleteNote}
+      title={t("notes.deleteNote")}
       description={
         noteTitle
-          ? `${t.notes.confirmDelete} "${noteTitle}"?`
-          : t.notes.confirmDelete
+          ? `${t("notes.confirmDelete")} "${noteTitle}"?`
+          : t("notes.confirmDelete")
       }
       footer={
         <>
           <Button variant="outline" onClick={handleClose} disabled={isDeleting}>
-            {t.common.cancel}
+            {t("common.cancel")}
           </Button>
           <Button
             variant="destructive"
             onClick={handleConfirm}
             disabled={isDeleting}
           >
-            {isDeleting ? t.common.loading : t.notes.deleteNote}
+            {isDeleting ? t("common.loading") : t("notes.deleteNote")}
           </Button>
         </>
       }

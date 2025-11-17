@@ -2,8 +2,7 @@
 
 import { Input } from "@/app/(frontend)/core/components/atoms/Input/Input";
 import { Label } from "@/app/(frontend)/core/components/atoms/Label/Label";
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTranslation } from "react-i18next";
 
 type SignInFormData = {
   email: string;
@@ -23,18 +22,17 @@ export default function SignInForm({
   formData,
   onUpdateFormData,
 }: SignInFormProps) {
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
 
   return (
     <div className="grid gap-4">
       {/* Email Field */}
       <div className="grid gap-2">
-        <Label htmlFor="email">{t.auth.email}</Label>
+        <Label htmlFor="email">{t("auth.email")}</Label>
         <Input
           id="email"
           type="email"
-          placeholder={t.auth.emailPlaceholder}
+          placeholder={t("auth.emailPlaceholder")}
           value={formData.email}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             onUpdateFormData("email", e.target.value)
@@ -45,11 +43,11 @@ export default function SignInForm({
 
       {/* Password Field */}
       <div className="grid gap-2">
-        <Label htmlFor="password">{t.auth.password}</Label>
+        <Label htmlFor="password">{t("auth.password")}</Label>
         <Input
           id="password"
           type="password"
-          placeholder={t.auth.passwordPlaceholder}
+          placeholder={t("auth.passwordPlaceholder")}
           value={formData.password}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             onUpdateFormData("password", e.target.value)

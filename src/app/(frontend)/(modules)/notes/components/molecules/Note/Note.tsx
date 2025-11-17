@@ -15,8 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/(frontend)/core/components/atoms/Card/Card";
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import { useTranslation } from "react-i18next";
 import { useTrialModeStore } from "@/app/(frontend)/core/store/useTrialModeStore";
 import { createAxios } from "@/app/(frontend)/core/utils/api";
 import { trackNoteDeleted } from "@/app/(frontend)/core/utils/analytics";
@@ -29,8 +28,7 @@ interface NoteProps {
 
 export default function Note({ note }: NoteProps) {
   const axios = createAxios();
-  const locale = useLocale();
-  const t = locales[locale];
+  const { t } = useTranslation();
   const router = useRouter();
   const { data: session } = useSession();
   const trialStore = useTrialModeStore();
@@ -61,7 +59,7 @@ export default function Note({ note }: NoteProps) {
         // Track note deletion in trial mode
         trackNoteDeleted(true);
         router.refresh();
-        toast.success(t.notes.deleteSuccessfully);
+        toast.success(t("notes.deleteSuccessfully"));
         return;
       }
 
@@ -74,9 +72,9 @@ export default function Note({ note }: NoteProps) {
       // Track note deletion for authenticated users
       trackNoteDeleted(false);
       router.refresh();
-      toast.success(t.notes.deleteSuccessfully);
+      toast.success(t("notes.deleteSuccessfully"));
     } catch (err: any) {
-      toast.error(t.notes.somethingWentWrong, {
+      toast.error(t("notes.somethingWentWrong"), {
         type: "error",
       });
       throw new Error(err);
@@ -92,7 +90,7 @@ export default function Note({ note }: NoteProps) {
           size="icon"
           onClick={handleDeleteClick}
           className="absolute right-2 top-2 z-10 h-8 w-8 opacity-0 transition-opacity hover:bg-destructive hover:text-destructive-foreground group-hover:opacity-100"
-          aria-label={t.notes.deleteNote}
+          aria-label={t("notes.deleteNote")}
         >
           <Trash2 className="h-4 w-4" />
         </Button>
