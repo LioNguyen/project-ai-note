@@ -1,0 +1,19 @@
+#!/bin/sh
+
+commit_regex='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert|types)(\(.+\))?: .{1,60}'
+
+message=$(cat "$1")
+
+if ! echo "$message" | grep -qE "$commit_regex"; then
+  echo "❌ Invalid commit message format!"
+  echo ""
+  echo "Your commit should follow: <type>(optional scope): description"
+  echo ""
+  echo "Examples:"
+  echo "  feat: add new login page"
+  echo "  fix(auth): resolve token issue"
+  echo "  docs(readme): update installation section"
+  exit 1
+fi
+
+echo "✔️ Commit message OK!"

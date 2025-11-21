@@ -1,0 +1,10 @@
+#!/bin/sh
+
+echo "🔍 Running pre-commit checks..."
+
+bunx lint-staged || {
+  echo "❌ Linting failed. Please fix errors."
+  exit 1
+}
+
+echo "✨ Code formatted & linted!"
