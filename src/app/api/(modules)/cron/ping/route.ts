@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { config, isDevelopment } from "@/app/api/core/config";
 import { pingPineconeIndex, pingMongoDB } from "./route.services";
 
 // Use Node.js runtime for stable long-running tasks
@@ -13,8 +14,8 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   try {
     // --- Log execution info ---
-    const environment = process.env.VERCEL_ENV || "development";
-    const vercelUrl = process.env.VERCEL_URL || "localhost";
+    const environment = config.app.vercelEnv;
+    const vercelUrl = config.vercel.url;
     const timestamp = new Date().toISOString();
 
     console.log("=".repeat(50));
@@ -99,7 +100,7 @@ export async function GET(request: Request) {
       {
         success: false,
         error: err instanceof Error ? err.message : "Unknown error",
-        stack: process.env.NODE_ENV === "development" ? err?.stack : undefined,
+        stack: isDevelopment ? err?.stack : undefined,
         timestamp: new Date().toISOString(),
       },
       { status: 500 },

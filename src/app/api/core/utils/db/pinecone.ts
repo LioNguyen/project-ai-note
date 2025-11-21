@@ -1,14 +1,9 @@
 import { Pinecone } from "@pinecone-database/pinecone";
-
-const apiKey = process.env.PINECONE_API_KEY;
-
-if (!apiKey) {
-  throw Error("PINECONE_API_KEY is not set");
-}
+import { config } from "@/app/api/core/config";
 
 const pinecone = new Pinecone({
-  apiKey,
+  apiKey: config.pinecone.apiKey,
 });
 
-// Get Index name on app.pinecone.io
-export const notesIndex = pinecone.Index("project-note-ai");
+// Get Index name from configuration
+export const notesIndex = pinecone.Index(config.pinecone.indexName);

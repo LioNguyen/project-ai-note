@@ -3,6 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/app/api/core/utils/db/prisma";
+import { config, isDevelopment } from "@/app/api/core/config";
 import bcrypt from "bcryptjs";
 
 /**
@@ -18,8 +19,8 @@ export const authOptions: AuthOptions = {
   providers: [
     // Google OAuth Provider
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: config.auth.googleClientId,
+      clientSecret: config.auth.googleClientSecret,
     }),
 
     // Email/Password Credentials Provider
@@ -105,8 +106,8 @@ export const authOptions: AuthOptions = {
   },
 
   // Enable debug messages in development
-  debug: process.env.NODE_ENV === "development",
+  debug: isDevelopment,
 
   // Secret for JWT
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: config.auth.nextAuthSecret,
 };

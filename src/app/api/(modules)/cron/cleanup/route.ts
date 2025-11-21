@@ -7,6 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { config, isDevelopment } from "@/app/api/core/config";
 import { executeCleanup, dryRunCleanup } from "./route.services";
 
 // Use Node.js runtime for stable long-running tasks
@@ -21,7 +22,7 @@ export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
   try {
     // --- Log execution info ---
-    const environment = process.env.VERCEL_ENV || "development";
+    const environment = config.app.vercelEnv;
     const timestamp = new Date().toISOString();
 
     console.log("=".repeat(50));
@@ -60,9 +61,7 @@ export async function POST(req: NextRequest) {
         error: "Failed to cleanup trial notes",
         details: error instanceof Error ? error.message : "Unknown error",
         stack:
-          process.env.NODE_ENV === "development" && error instanceof Error
-            ? error.stack
-            : undefined,
+          isDevelopment && error instanceof Error ? error.stack : undefined,
       },
       { status: 500 },
     );
@@ -77,7 +76,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     // --- Log execution info ---
-    const environment = process.env.VERCEL_ENV || "development";
+    const environment = config.app.vercelEnv;
     const timestamp = new Date().toISOString();
 
     console.log("=".repeat(50));
@@ -116,9 +115,7 @@ export async function GET(req: NextRequest) {
         error: "Failed to check trial notes",
         details: error instanceof Error ? error.message : "Unknown error",
         stack:
-          process.env.NODE_ENV === "development" && error instanceof Error
-            ? error.stack
-            : undefined,
+          isDevelopment && error instanceof Error ? error.stack : undefined,
       },
       { status: 500 },
     );

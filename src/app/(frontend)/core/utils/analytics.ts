@@ -2,10 +2,10 @@
  * Google Analytics Utility
  * Handles GA4 tracking and event logging
  */
+import { config } from "@/app/(frontend)/core/config";
 
 // Google Analytics Measurement ID
-export const GA_MEASUREMENT_ID =
-  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
+export const GA_MEASUREMENT_ID = config.analytics.gaId;
 
 // Check if GA is available
 export const isGAEnabled = (): boolean => {

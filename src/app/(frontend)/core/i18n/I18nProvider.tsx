@@ -1,9 +1,10 @@
 "use client";
 
-import { I18nextProvider } from "react-i18next";
 import { useEffect } from "react";
-import i18n from "./config";
+import { I18nextProvider } from "react-i18next";
+
 import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+import i18n from "./config";
 
 interface I18nProviderProps {
   children: React.ReactNode;

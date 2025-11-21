@@ -1,17 +1,20 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { config } from "@/app/api/core/config";
 
 // Lazy initialization to prevent build-time errors
 let genAI: GoogleGenerativeAI | null = null;
 
 function getGeminiClient() {
   if (!genAI) {
-    const apiKey = process.env.GEMINI_API_KEY;
-
-    if (!apiKey) {
-      throw Error("GEMINI_API_KEY is not set");
+    try {
+      genAI = new GoogleGenerativeAI(config.gemini.apiKey);
+    } catch (error) {
+      throw new Error(
+        `Failed to initialize Gemini client: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      );
     }
-
-    genAI = new GoogleGenerativeAI(apiKey);
   }
 
   return genAI;
@@ -21,7 +24,7 @@ export default getGeminiClient;
 
 export async function getEmbedding(text: string) {
   const client = getGeminiClient();
-  const model = client.getGenerativeModel({ model: "text-embedding-004" });
+  const model = client.getGenerativeModel({ model: config.gemini.model });
 
   const result = await model.embedContent(text);
   const embedding = result.embedding.values;
