@@ -1,540 +1,351 @@
-# Technical Architecture Documentation
+# Technical Architecture Rules
 
-## 1. ⚠️ CRITICAL: Next.js 14/15 Application Architecture
+**CRITICAL**: This is a Next.js 15 application with App Router, Server Components, and full-stack capabilities.
 
-**THIS REPOSITORY CONTAINS A NEXT.JS APPLICATION WITH APP ROUTER AND FULL-STACK CAPABILITIES.**
+## 1. Reference & Technology Stack
 
-### 1.1. Architecture Scope
+For development principles and code quality standards, refer to `.github/copilot-instructions.md`.
 
-- **Next.js Framework**: Full-stack React framework with App Router (v16.0.1)
-- **Backend Integration**: API routes with service layer pattern
-- **Database Layer**: Prisma ORM with PostgreSQL, Pinecone vector database
-- **Authentication**: Clerk for user management
-- **AI Integration**: Google Gemini AI with RAG pattern, Google Embeddings (768-dim)
+**Stack Overview:**
 
-### 1.2. Technology Stack
+- **Framework**: Next.js 15.0.3 (App Router, Server Components)
+- **React**: 18.3.1 with RSC
+- **Language**: TypeScript 5 (strict)
+- **Database**: Prisma 5.5.2 ORM + MongoDB
+- **Auth**: NextAuth 4.24.13 (Google OAuth + Credentials) + bcryptjs
+- **Vector DB**: Pinecone (semantic search, embeddings)
+- **AI**: Google Gemini (chat), Google Text Embeddings (text-embedding-004, 768-dim)
+- **UI**: Tailwind CSS 3 + shadcn/ui (Radix UI) + Lucide React
+- **State**: Zustand 5.0.8 (client-side)
+- **Forms**: React Hook Form 7 + Zod validation
+- **i18n**: i18next + react-i18next (EN, VI)
+- **HTTP Client**: Axios
+- **Scheduling**: GitHub Actions cron
+- **Package Manager**: Bun
 
-- **Framework**: Next.js 16.0.1 with App Router
-- **React**: 19.2.0 with Server Components
-- **TypeScript**: 5 with strict type checking
-- **Database**: Prisma 5.5.2 + PostgreSQL
-- **Vector DB**: Pinecone for semantic search
-- **AI Services**: Google Gemini AI (chat), Google Embeddings (text-embedding-004)
-- **Authentication**: Clerk 6.34.5 for user management
-- **Styling**: Tailwind CSS 3 with shadcn/ui components
-- **State Management**: Zustand 5.0.8
-- **Form Handling**: React Hook Form 7 with Zod validation
-- **Cron Jobs**: GitHub Actions for scheduled tasks (health check, cleanup)
+**Style Standards**: Use Tailwind CSS + shadcn/ui ONLY. Never use plain CSS or other frameworks.
 
-### 1.3. Styling Standards
+**Key Constraints**:
 
-**ALWAYS use Tailwind CSS with shadcn/ui:**
+- Server Components by default; "use client" only when necessary
+- End-to-end TypeScript (no implicit `any`)
+- API routes: strict three-file pattern (route.ts, route.services.ts, route.types.ts)
+- Zod validation for all API inputs and critical logic
+- Prisma migrations required for schema changes
 
-- Tailwind CSS utility-first methodology
-- shadcn/ui for accessible component primitives (Radix UI based)
-- CSS variables with dark mode via next-themes
-- Lucide React for icons
+## 2. System Overview
 
-### 1.4. shadcn/ui Integration
+**AI Note-Taking Application**: Full-stack Next.js app combining note management with AI-powered chat. Uses vector embeddings for semantic search and RAG pattern for contextual AI responses.
 
-- Use as foundation, customize with Tailwind utilities
-- Maintain accessibility through Radix UI primitives
-- Follow naming conventions and leverage variants
+**Core Features**: Note CRUD, AI chat, semantic search, trial mode, multi-language (EN, VI), dark/light theme, Google OAuth + Email/Password auth.
 
-### 1.5. Version Compatibility
-
-**Current Stack:** Next.js 16.0.1, React 19.2.0, Tailwind CSS 3, Radix UI packages
-
-**Version Check:** Verify package.json → Reference docs → Check API compatibility → Follow migration guides
-
-## 2. System Architecture
-
-### 2.1. Project Description
-
-AI Note-Taking Application is a full-stack Next.js application that combines note management with AI-powered chat capabilities. The system uses vector embeddings for semantic search and implements RAG (Retrieval-Augmented Generation) for contextual AI responses.
-
-### 2.2. High-Level Architecture
+**Architecture Layers**:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                   Next.js Application                      │
-├─────────────────────────────────────────────────────────────┤
-│                                                            │
-│  ┌─────────────────┐         ┌──────────────────┐         │
-│  │   Frontend      │         │   Backend API    │         │
-│  │  (App Router)   │◄────────┤   (API Routes)   │         │
-│  └─────────────────┘         └──────────────────┘         │
-│         │                             │                    │
-│         │                             ├─► Prisma/Postgres │
-│         │                             ├─► Pinecone Vector  │
-│         │                             └─► Gemini AI       │
-│         │                                                  │
-│  ┌─────────────────┐                                      │
-│  │  State (Zustand)│                                      │
-│  │  - Language     │                                      │
-│  │  - UI State     │                                      │
-│  └─────────────────┘                                      │
-└─────────────────────────────────────────────────────────────┘
-
-         │                                    │
-         ▼                                    ▼
-   ┌──────────┐                        ┌──────────┐
-   │  Clerk   │                        │ External │
-   │   Auth   │                        │  APIs    │
-   └──────────┘                        └──────────┘
+Frontend (App Router)
+  ↓
+Zustand Store (client state)
+  ↓
+NextAuth Session Management
+  ↓
+API Routes (validation, services)
+  ↓
+Prisma ORM ← MongoDB
+Pinecone Vector DB
+External APIs (Gemini, Google OAuth)
 ```
 
-### 2.3. Architecture Principles
+## 3. Project Structure
 
-- **Server-First**: Leverage Server Components for initial loads
-- **API Layer Separation**: Route groups isolate backend from frontend
-- **Service Layer**: Business logic separated from route handlers
-- **Type Safety**: End-to-end TypeScript with Zod schemas
-- **Atomic Design**: Scalable UI component architecture
-
-## 3. Application Structure
-
-### 3.1. Directory Organization
-
-The application follows Next.js App Router conventions with route groups for clear separation of concerns:
+**Directory Organization** (App Router with route groups):
 
 ```
 src/app/
-├── (backend)/                  # Backend API layer (route group)
-│   └── api/
-│       ├── (modules)/          # Modular API endpoints (route group)
-│       │   ├── auth/           # Authentication API
-│       │   │   ├── auth.config.ts          # Auth configuration
-│       │   │   ├── [...nextauth]/
-│       │   │   │   └── route.ts            # NextAuth route handler
-│       │   │   └── signup/
-│       │   │       └── route.ts            # Sign-up endpoint
-│       │   ├── cron/           # Scheduled jobs & health checks
-│       │   │   ├── cleanup/
-│       │   │   │   ├── route.ts            # POST (execute), GET (dry run)
-│       │   │   │   ├── route.services.ts   # Cleanup business logic
-│       │   │   │   └── route.types.ts      # Cleanup types & schemas
-│       │   │   └── ping/
-│       │   │       ├── route.ts            # GET health check
-│       │   │       ├── route.services.ts   # Pinecone & MongoDB ping
-│       │   │       └── route.types.ts      # Ping response types
-│       │   ├── chat/           # AI Chat API (RAG pattern)
-│       │   │   ├── route.ts                # POST (streaming response)
-│       │   │   ├── route.services.ts       # AI logic & context building
-│       │   │   └── route.types.ts          # Message types
-│       │   ├── notes/          # Notes CRUD API
-│       │   │   ├── route.ts                # GET (all), POST (create)
-│       │   │   ├── route.services.ts       # Business logic
-│       │   │   ├── route.types.ts          # TypeScript types
-│       │   │   ├── [id]/                   # Individual note operations
-│       │   │   │   ├── route.ts            # PUT (update), DELETE
-│       │   │   │   ├── route.services.ts
-│       │   │   │   └── route.types.ts
-│       │   │   └── search/                 # Search & filtering
-│       │   │       ├── route.ts            # GET with query params
-│       │   │       ├── route.services.ts
-│       │   │       └── route.types.ts
-│       │   └── trial/          # Trial mode operations
-│       │       ├── clear/
-│       │       │   └── route.ts            # DELETE all trial data
-│       │       └── sync-pinecone/
-│       │           ├── route.ts            # POST sync trial notes
-│       │           ├── [id]/
-│       │           │   └── route.ts        # Individual note sync
-│       │           ├── route.services.ts
-│       │           └── route.types.ts
-│       └── core/               # Shared backend utilities
-│           └── utils/          # Helper functions
-│               ├── db/
-│               │   ├── prisma.ts           # Singleton Prisma client
-│               │   └── pinecone.ts         # Pinecone vector index
-│               ├── validation/
-│               │   └── note.ts             # Zod validation schemas
-│               ├── auth.ts                 # Authentication helpers
-│               ├── openai.ts               # Google Gemini & embeddings
-│               ├── string.ts               # Vietnamese text utilities
-│               ├── embedding.ts            # Note embedding generation
-│               ├── chat.ts                 # Chat helper functions
-│               └── trialMode.ts            # Trial mode utilities
-├── (frontend)/                # Frontend layer (route group)
-│   ├── (modules)/             # Feature modules
-│   │   ├── notes/
-│   │   │   ├── page.tsx               # Notes listing
-│   │   │   ├── layout.tsx             # Module layout
-│   │   │   ├── loading.tsx            # Loading state
-│   │   │   ├── components/
-│   │   │   │   ├── molecules/
-│   │   │   │   │   ├── AddEditNoteDialog/
-│   │   │   │   │   ├── ChatMessage/
-│   │   │   │   │   └── NoteCardSkeleton/
-│   │   │   │   └── organisms/
-│   │   │   │       ├── ChatBot/
-│   │   │   │       ├── Note/
-│   │   │   │       └── NotesGrid/
-│   │   │   └── stores/
-│   │   │       ├── useChatBoxStore.ts
-│   │   │       └── useNoteDialogStore.ts
-│   │   ├── sign-in/[[...sign-in]]/
-│   │   │   ├── page.tsx
-│   │   │   └── components/SignInPage.tsx
-│   │   └── sign-up/[[...sign-up]]/
-│   │       ├── page.tsx
-│   │       └── components/SignUpPage.tsx
-│   └── core/                  # Shared frontend infrastructure
-│       ├── components/        # Atomic Design components
-│       │   ├── atoms/
-│       │   │   ├── Button/
-│       │   │   ├── Card/
-│       │   │   ├── Dialog/
-│       │   │   ├── EmptyState/        # Empty state UI
-│       │   │   ├── Form/
-│       │   │   ├── Input/
-│       │   │   ├── Label/
-│       │   │   ├── LoadingButton/
-│       │   │   ├── Pagination/
-│       │   │   ├── Select/
-│       │   │   ├── Sheet/
-│       │   │   ├── Skeleton/
-│       │   │   ├── Switch/            # Custom switch
-│       │   │   └── Textarea/
-│       │   ├── molecules/
-│       │   │   ├── AIChatButton/
-│       │   │   ├── BaseSheet/
-│       │   │   ├── LanguageSwitcher/  # EN/VI toggle
-│       │   │   ├── SearchBox/
-│       │   │   └── ThemeToggleButton/
-│       │   └── organisms/
-│       │       ├── DataGrid/          # Generic data grid
-│       │       └── NavBar/
-│       ├── i18n/              # Internationalization
-│       │   ├── index.ts
-│       │   └── locale/
-│       │       ├── en/default.ts      # English translations
-│       │       └── vi/default.ts      # Vietnamese translations
-│       ├── store/             # Global Zustand stores
-│       │   └── useLanguageStore.ts
-│       └── utils/             # Frontend utilities
-│           ├── api.ts
-│           └── utils.ts
-├── shared/assets/             # Shared static assets
-│   └── logo.png
-├── globals.css
-├── layout.tsx                 # Root layout
-├── page.tsx                   # Home page
-└── ThemeProvider.tsx
+├── api/
+│   ├── (modules)/
+│   │   ├── auth/ → auth.config.ts (NextAuth config), [...nextauth]/route.ts, signup/route.ts
+│   │   ├── chat/ → route.ts (POST streaming) + route.services.ts + route.types.ts
+│   │   ├── cron/ → cleanup/route.ts, ping/route.ts (with .services.ts/.types.ts)
+│   │   ├── notes/ → route.ts, [id]/route.ts, search/route.ts + .services.ts/.types.ts
+│   │   └── trial/ → clear/route.ts, sync-pinecone/ + route.ts + .services.ts/.types.ts
+│   └── core/
+│       ├── config/ → index.ts (env variables, secrets)
+│       └── utils/
+│           ├── db/ → prisma.ts (Singleton), pinecone.ts
+│           ├── auth.ts, embedding.ts, chat.ts, string.ts
+│           └── validation/ → note.ts (Zod schemas)
+├── (frontend)/
+│   ├── core/
+│   │   ├── components/ → atoms/, molecules/, organisms/ (Atomic Design)
+│   │   ├── config/ → i18next config
+│   │   ├── domains/ → types/ (TypeScript types, interfaces)
+│   │   └── utils/ → api.ts, helpers
+│   └── (modules)/ → feature-specific modules (notes, sign-in, sign-up, etc.)
+├── shared/
+│   └── assets/ → logo.png, images
+├── layout.tsx, page.tsx, globals.css, ThemeProvider.tsx, SessionProvider.tsx
+└── middleware.ts (auth middleware)
 
-src/middleware.ts              # Auth & routing middleware
-
-prisma/schema.prisma          # Database schema
-
-scripts/                       # Utility scripts
-├── check-notes.ts
-├── create-random-notes.ts
-├── reset-vietnamese-notes.ts
-├── sync-pinecone.ts
-└── update-user-id.ts
+prisma/schema.prisma (MongoDB schema with NextAuth models)
 ```
 
-### 3.2. API Route Pattern
+**Three-file structure:** `route.ts` (HTTP handler) + `route.services.ts` (business logic) + `route.types.ts` (types/schemas)
 
-**Three-file structure for maintainability:**
+**Module organization:**
 
-- `route.ts` - HTTP handlers (GET, POST, PUT, DELETE)
-- `route.services.ts` - Business logic, database operations
-- `route.types.ts` - TypeScript interfaces and DTOs
+- `/api/(modules)/auth/` → NextAuth config (Google OAuth + Credentials), signup (email/password registration)
+- `/api/(modules)/cron/` → cleanup (trial notes), ping (health checks)
+- `/api/(modules)/chat/` → AI chat (RAG pattern, streaming)
+- `/api/(modules)/notes/` → CRUD, [id], search endpoints
+- `/api/(modules)/trial/` → data sync, cleanup
+- `/api/core/` → config (env variables), utils (db, validation, AI)
 
-**Module Organization:**
-
-- All API endpoints under `/api/(modules)/` route group
-- **auth**: Authentication (NextAuth, signup)
-- **cron**: Scheduled jobs (cleanup old trial notes, health checks)
-- **chat**: AI chat with RAG pattern
-- **notes**: CRUD operations with semantic search
-- **trial**: Trial mode specific operations (data sync, cleanup)
-- **core/utils**: Shared backend utilities (database, validation, AI)
-
-**Example:**
+**API Pattern:**
 
 ```typescript
 // route.types.ts
-export interface Note {
-  id: string;
-  title: string;
-  content?: string;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface CreateNoteRequest {
-  title: string;
-  content?: string;
-}
+export const CreateNoteSchema = z.object({
+  title: z.string(),
+  content: z.string().optional(),
+});
+export type CreateNoteRequest = z.infer<typeof CreateNoteSchema>;
 
 // route.services.ts
-import prisma from "@/app/(backend)/api/core/utils/db/prisma";
-import { getEmbeddingForNote } from "@/app/(backend)/api/core/utils/embedding";
-
 export async function createNote(
   userId: string,
   data: CreateNoteRequest,
 ): Promise<Note> {
-  const embedding = await getEmbeddingForNote(data.title, data.content);
-
-  const note = await prisma.note.create({
-    data: { ...data, userId },
-  });
-
+  const embedding = await getEmbeddingForNote(data.title);
+  const note = await prisma.note.create({ data: { ...data, userId } });
   await notesIndex.upsert([
-    {
-      id: note.id,
-      values: embedding,
-      metadata: { userId },
-    },
+    { id: note.id, values: embedding, metadata: { userId } },
   ]);
-
   return note;
 }
 
 // route.ts
-import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import { createNote } from "./route.services";
-
 export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const body = await req.json();
+  const body = CreateNoteSchema.parse(await req.json());
   const note = await createNote(userId, body);
   return NextResponse.json(note, { status: 201 });
 }
 ```
 
-**Benefits:** Separation of concerns, testability, reusability, type safety
-
 ### 3.3. Component Organization
 
-**Atomic Design Hierarchy:**
+**Atomic Design:** Atoms (Button, Input, Card) → Molecules (SearchBox, LanguageSwitcher) → Organisms (NavBar, ChatBot)
 
-- **Atoms**: Button, Input, Card, EmptyState, Switch
-- **Molecules**: SearchBox, LanguageSwitcher, AIChatButton
-- **Organisms**: NavBar, ChatBot, NotesGrid
+**Structure:** `ComponentName/ComponentName.tsx` + index.ts
 
-**Structure:** `ComponentName/ComponentName.tsx` + optional index.ts
+**Locations:**
 
-**Examples:**
+- **Core Components** (`(frontend)/core/components/`): Reusable base components (Atoms, Molecules, Organisms)
+- **Module Components** (`(modules)/{module}/components/`): Feature-specific components for that module
+
+**Layer Isolation Rules** (CRITICAL):
+
+```
+Atoms:        Can import → shadcn/ui, Lucide, utils
+Molecules:    Can import → Atoms only (same layer + parent layers)
+Organisms:    Can import → Atoms, Molecules (same layer + parent layers)
+
+Core Layer:   core/atoms → core/molecules → core/organisms
+Feature Layer: modules/*/atoms → modules/*/molecules → modules/*/organisms
+
+FORBIDDEN Cross-Layer Imports:
+❌ Atoms importing Molecules/Organisms (same or any layer)
+❌ Molecules importing Molecules (same layer)
+❌ Molecules importing Organisms (same or any layer)
+❌ Organisms importing Organisms (same layer)
+
+ALLOWED Cross-Folder Imports:
+✅ modules/*/molecules CAN import core/molecules
+✅ modules/*/organisms CAN import core/molecules, core/organisms
+✅ Any layer in modules/feature can import from core/
+```
+
+**Key Rules:**
+
+- Use `"use client"` only when necessary (state, effects, event handlers)
+- Props are TypeScript interfaces
+- Tailwind CSS + shadcn/ui components only
+- Single responsibility per component
+
+### 3.4. Backend Utilities
+
+**Location:** `src/app/api/core/utils/`
+
+- **db/prisma.ts** → Singleton Prisma client (globalThis pattern, MongoDB connection)
+- **db/pinecone.ts** → Vector search index initialization
+- **embedding.ts** → Generate embeddings for notes + retrieve relevant context
+- **chat.ts** → Gemini format conversion, context building for RAG
+- **string.ts** → Vietnamese text normalization, search matching
+- **validation/note.ts** → Zod schemas for all note operations
+
+### 3.5. Authentication (NextAuth)
+
+**Configuration Location:** `src/app/api/(modules)/auth/auth.config.ts`
+
+**Features:**
+
+- **Google OAuth**: Automatic user creation/linking via PrismaAdapter
+- **Credentials (Email/Password)**: Manual signup → bcryptjs hashing → login with email + password
+- **Session Strategy**: JWT (30-day expiry)
+- **User Model**: MongoDB-backed (Prisma adapter)
+
+**Auth Flow:**
+
+1. User signs up (email/password) → password hashed with bcryptjs → stored in DB
+2. User logs in → credentials validated → NextAuth JWT session created
+3. API routes access session via `getServerSession(authOptions)`
+4. Frontend accesses `useSession()` (client-side)
+
+**Protected Routes:**
 
 ```typescript
-// Atom: EmptyState
-interface EmptyStateProps {
-  icon: LucideIcon;
-  title: string;
-  description?: string;
-  action?: React.ReactNode;
+// API route example
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/(modules)/auth/auth.config";
+
+export async function GET(req: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // User is authenticated
 }
 
-export default function EmptyState({ icon: Icon, title, description, action }: EmptyStateProps) {
-  return (
-    <div className="flex flex-col items-center rounded-lg border-2 border-dashed p-8">
-      <Icon className="mb-4 h-12 w-12 text-muted-foreground" />
-      <h3 className="mb-2 text-lg font-semibold">{title}</h3>
-      {description && <p className="text-sm text-muted-foreground">{description}</p>}
-      {action}
-    </div>
-  );
-}
-
-// Molecule: LanguageSwitcher
+// Client component example
 "use client";
-export default function LanguageSwitcher() {
-  const locale = useLocale();
-  const setLocale = useSetLocale();
-  const isVietnamese = locale === "vi";
+import { useSession } from "next-auth/react";
 
-  return (
-    <button role="switch" aria-checked={isVietnamese}
-      onClick={() => setLocale(isVietnamese ? "en" : "vi")}
-      className={cn("relative inline-flex h-7 w-14 items-center rounded-full",
-        isVietnamese ? "bg-primary" : "bg-input")}>
-      <span className={cn("flex h-6 w-6 rounded-full bg-background",
-        isVietnamese ? "translate-x-7" : "translate-x-0")}>
-        {isVietnamese ? "VI" : "EN"}
-      </span>
-    </button>
-  );
+export default function Dashboard() {
+  const { data: session, status } = useSession();
+  if (status === "loading") return <Loading />;
+  if (!session) return <Redirect to="/sign-in" />;
+  return <h1>Welcome {session.user.name}</h1>;
 }
 ```
 
-**Best Practices:** Use `"use client"` only when needed, single responsibility, TypeScript interfaces for props
+### 3.6. Internationalization (i18next)
 
-### 3.4. Backend Utility Structure
-
-**Location:** `src/app/(backend)/api/core/utils/`
-
-**Database (`utils/db/`):**
-
-```typescript
-// prisma.ts - Singleton pattern
-const prisma = globalThis.prismaGlobal ?? new PrismaClient();
-export default prisma;
-
-// pinecone.ts
-export const notesIndex = pinecone.Index("nextjs-note-ai");
-```
-
-**AI & Embeddings:**
-
-```typescript
-// embedding.ts
-export async function getEmbeddingForNote(
-  title: string,
-  content?: string,
-): Promise<number[]> {
-  return getEmbedding(title + "\n\n" + (content ?? ""));
-}
-
-// chat.ts - Helper functions
-export function convertToGeminiFormat(messages: ChatMessage[]): GeminiMessage[];
-export async function getRelevantNotes(
-  userId: string,
-  embedding: number[],
-): Promise<Note[]>;
-```
-
-**String & Validation:**
-
-```typescript
-// string.ts - Vietnamese normalization
-export function normalizeVietnamese(text: string): string;
-export function containsSearch(text: string, query: string): boolean;
-
-// validation/note.ts - Zod schemas
-export const createNoteSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  content: z.string().optional(),
-});
-```
-
-### 3.5. Internationalization (i18n) System
-
-**Structure:** `src/app/(frontend)/core/i18n/` with EN/VI locale files
+**Structure:** `src/app/(frontend)/core/config/i18next.config.ts` + locale files
 
 **Implementation:**
 
 ```typescript
-// locale/en/default.ts & locale/vi/default.ts
-export default {
-  navbar: { appName: "Smart Notes", addNote: "Add Note" },
-  notes: {
-    search: { placeholder: "Search notes...", sortBy: "Sort by" },
-    empty: { noNotes: "No notes yet", createFirst: "Create your first note" }
-  }
-};
+// config/i18next.config.ts (Initialization)
+import i18next from "i18next";
+import { initReactI18next } from "react-i18next";
+import en from "@/locales/en/translation.json";
+import vi from "@/locales/vi/translation.json";
 
-// index.ts
-import en from "./locale/en/default";
-import vi from "./locale/vi/default";
-export const locales = { en, vi };
+i18next.use(initReactI18next).init({
+  resources: { en: { translation: en }, vi: { translation: vi } },
+  lng: "en",
+  fallbackLng: "en",
+  interpolation: { escapeValue: false }
+});
 
-// store/useLanguageStore.ts - Zustand with persistence
-export const useLanguageStore = create<LanguageState>()(
-  persist((set) => ({
-    locale: "en",
-    setLocale: (locale) => set({ locale }),
-  }), { name: "language-storage" })
-);
-
-// Selectors for optimization
-export const useLocale = () => useLanguageStore((state) => state.locale);
-export const useSetLocale = () => useLanguageStore((state) => state.setLocale);
-
-// Usage in components - use useTranslation hook
-import { useTranslation } from "@/app/(frontend)/core/i18n";
-
-const t = useTranslation();
-return <h1>{t.navbar.appName}</h1>;
-
-// Keep useLocale() only for locale-specific conditional rendering
-const locale = useLocale(); // For conditionals like: locale === "vi" ? "Vietnamese text" : "English text"
+// locales/en/translation.json
+{ "navbar": { "appName": "Smart Notes" }, "notes": { "empty": "No notes yet" } }
 ```
 
-## 4. Component & Code Standards
-
-### 4.1. Next.js Component Patterns
+**Usage in Components:**
 
 ```typescript
-// Client Component - use "use client" for interactivity
+import { useTranslation } from "react-i18next";
+
+export default function Navbar() {
+  const { t, i18n } = useTranslation();
+  return (
+    <div>
+      <h1>{t("navbar.appName")}</h1>
+      <button onClick={() => i18n.changeLanguage("vi")}>Tiếng Việt</button>
+    </div>
+  );
+}
+```
+
+**How it works:**
+
+- `useTranslation()` hook provides `t()` function to access translations
+- `i18n.changeLanguage()` switches language → all components re-render
+- Translation keys are nested objects: `t("navbar.appName")`
+
+## 4. Code Standards
+
+### 4.1. Next.js Components
+
+**Server Components (default):**
+
+```typescript
+export default async function NotesPage() {
+  const notes = await prisma.note.findMany();
+  return <div>{notes}</div>;
+}
+```
+
+**Client Components (use "use client" only when needed):**
+
+```typescript
 "use client";
 import { useState } from "react";
-
-export default function NoteForm({ onSubmit, initialData }: NoteFormProps) {
-  const [title, setTitle] = useState(initialData?.title || "");
+export default function NoteForm({ onSubmit }: Props) {
+  const [title, setTitle] = useState("");
   return <form onSubmit={handleSubmit}>...</form>;
 }
-
-// Server Component - default, no directive needed
-export default async function NotesPage({ searchParams }: NotesPageProps) {
-  const notes = await prisma.note.findMany({ where: { /* filters */ } });
-  return <div>{/* render */}</div>;
-}
 ```
 
-### 4.2. Import Organization
+**Import Ordering (CRITICAL):**
 
 ```typescript
-// External packages first
-import { UserButton } from "@clerk/nextjs";
-import { Plus } from "lucide-react";
-import Link from "next/link";
+// 1. Third-party packages (React, Next.js, external libraries)
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Plus, Trash2 } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-// Internal imports with @ alias
-import { Button } from "@/app/(frontend)/core/components/atoms/Button/Button";
-import { locales } from "@/app/(frontend)/core/i18n";
-import { useLocale } from "@/app/(frontend)/core/store/useLanguageStore";
+// 2. Custom imports from repo (alphabetically by path)
+import { Button } from "@/app/(frontend)/core/components/atoms/Button";
+import { useLanguageStore } from "@/app/(frontend)/core/store/useLanguageStore";
+import { apiClient } from "@/app/(frontend)/core/utils/api";
+import type { Note } from "@/types/note";
 ```
 
-### 4.3. State Management with Zustand
+**Key Rules:**
+
+- Third-party packages → Custom imports
+- Custom imports alphabetically by full path
+- Group `import type` with other imports but after values
+- Use `@/` alias for all repo imports (never relative paths)
+
+### 4.2. State Management (Zustand)
 
 ```typescript
-// Store with persistence and selectors
-export const useLanguageStore = create<LanguageState>()(
+export const useLanguageStore = create<State>()(
   persist(
     (set) => ({
       locale: "en",
-      setLocale: (locale) => set({ locale }),
+      setLocale: (l) => set({ locale: l }),
     }),
     { name: "language-storage" },
   ),
 );
-
-// Selector pattern for optimization
-export const useLocale = () => useLanguageStore((state) => state.locale);
-export const useSetLocale = () => useLanguageStore((state) => state.setLocale);
+export const useLocale = () => useLanguageStore((s) => s.locale);
 ```
 
-### 4.4. Form Handling with React Hook Form & Zod
+### 4.3. Forms (React Hook Form + Zod)
 
 ```typescript
-const noteSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  content: z.string().optional(),
-});
+const schema = z.object({ title: z.string().min(1) });
+type FormData = z.infer<typeof schema>;
 
-type NoteFormData = z.infer<typeof noteSchema>;
-
-export default function NoteDialog() {
+export default function NoteForm() {
   const { register, handleSubmit, formState: { errors, isSubmitting } } =
-    useForm<NoteFormData>({ resolver: zodResolver(noteSchema) });
-
-  const onSubmit = async (data: NoteFormData) => {
-    await fetch("/api/notes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-  };
+    useForm<FormData>({ resolver: zodResolver(schema) });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

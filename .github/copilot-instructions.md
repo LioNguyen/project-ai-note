@@ -1,165 +1,134 @@
-## User Preferences Rules for AI Interaction
+# AI Copilot Instructions for Project AI Note
 
-### 0. **Project Architecture Compliance**
+## 0. Critical Rules Reference
 
-- **Follow Core Development Rules**: ALWAYS adhere to the principles and guidelines defined in `.ai/rules/core-development-rule.md`
-- **Follow Technical Architecture**: ALWAYS follow the technical architecture standards and patterns defined in `.ai/rules/technical-architecture-rule.md`
-- **Critical Rules Priority**: These architectural documents take precedence over general preferences when conflicts arise
-- **Documentation-First**: Follow the documentation-first development approach mandated in core rules
-- **Build Validation**: Execute build validation process for all code-related tasks as specified in core rules
+**ALWAYS follow these foundational rules:**
 
-**Key Architecture Requirements:**
+- **Refer to `.ai/rules/technical-architecture-rule.md`** for all technical specifications, project structure, technology stack, and implementation patterns
+- **Follow core development principles:**
+  - **Build Validation**: Execute `bun run type-check` → `bun run lint` → `bun run build` before completing code tasks
+  - **Documentation-First**: Always scan `.ai/documents/` and `.ai/rules/` before starting work
+  - **Code Quality**: Maintain strict TypeScript, proper error handling, and end-to-end type safety
+  - **Full-Stack Thinking**: Consider impacts across frontend, backend, and database layers
+- **Architecture Priority**: Technical architecture rules take precedence over general preferences
 
-- This is a Next.js 16.0.1 application with App Router and full-stack capabilities
-- Use route groups for separation: `(backend)` for API routes, `(frontend)` for pages
-- Follow service layer pattern: `route.ts`, `route.services.ts`, `route.types.ts`
-- Apply Atomic Design for components: atoms → molecules → organisms
-- Use Tailwind CSS with shadcn/ui for all styling (never plain CSS or other frameworks)
-- Implement proper TypeScript typing with Zod validation
-- Support English/Vietnamese internationalization via custom i18n system
-- Extract reusable utilities to `core/utils` directories (backend and frontend)
+## 1. Development Workflow Standards
 
-### 1. **Language & Clarity**
+### 1.1 Task Initialization
+
+**Before starting ANY task:**
+
+1. Check `.ai/documents/` for relevant existing documentation
+2. Review `.ai/rules/technical-architecture-rule.md` for applicable patterns and specifications
+3. Create or update documentation before coding
+4. Identify which layers (frontend/backend/both) are affected
+5. Plan API contracts and data flows if backend is involved
+6. Ask clarifying questions if requirements are ambiguous
+
+### 1.2 Build Validation (Code Tasks Only)
+
+**For ALL code-related tasks:**
+
+1. Run `bun run type-check` to verify TypeScript compilation
+2. Run `bun run lint` to ensure code quality
+3. Run `bun run build` to verify production compilation
+4. If any step fails, resolve errors immediately before completing the task
+5. Never commit code that fails build validation
+
+**Documentation-only tasks do NOT require build validation.**
+
+## 2. Code Communication Standards
+
+### 2.1 Language & Clarity
 
 - **Use English**: Respond exclusively in English to ensure clear communication
-- **Be Concise**: Provide straightforward answers, avoiding unnecessary complexity or verbosity in explanations
+- **Be Concise**: Provide straightforward answers, avoiding unnecessary complexity in explanations
+- **Avoid Verbosity**: Keep responses focused and direct
 
-### 2. **Commenting & Explanation**
+### 2.2 Code Comments & Explanation
 
-- **Detailed Comments**: Include inline comments in any code examples, especially for key functions and complex logic
-- **Clarify Key Points**: When discussing technical concepts or providing code snippets, explain the rationale behind specific choices
+- **Detailed Comments**: Include inline comments for key functions and complex logic
+- **Clarify Rationale**: Explain the "why" behind specific code choices
 - **Document Edge Cases**: Highlight potential issues and their solutions
+- **Explain Trade-offs**: Discuss performance vs. readability trade-offs when relevant
 
-### 3. **Code Standards & Quality**
+### 2.3 Code Quality Principles
 
-- **Follow Best Practices**: Adhere strictly to coding standards and refactoring principles, including:
-  - Avoiding unnecessary object copying or cloning
-  - Limiting nesting and encouraging early returns for better readability
-  - Implementing appropriate error handling and validation
-- **Code Readability**: Ensure code is easy to read and well-structured, following consistent naming conventions and organization
-- **Performance Optimization**: Prioritize efficient algorithms and effective memory use, especially for applications running on Mac systems
+- **Follow Best Practices**: Adhere to coding standards and refactoring principles:
+  - Avoid unnecessary object copying or cloning
+  - Limit nesting and encourage early returns
+  - Implement proper error handling and validation
+- **Code Readability**: Ensure code is easy to read with consistent naming and organization
+- **Performance Optimization**: Prioritize efficient algorithms and effective memory use
+- **Type Safety**: Maintain strict TypeScript usage (no implicit `any` types)
 
-### 4. **Interactive Development**
+## 3. Development Approach
+
+### 3.1 Code Smells & Refactoring
+
+**Identify and suggest fixes for:**
+
+- **Mysterious Names**: Propose descriptive naming improvements
+- **Duplicate Code**: Recommend extraction into shared utilities or functions
+- **Long Functions**: Suggest decomposition into focused, single-responsibility functions
+- **Large Files**: Propose logical splitting strategies
+- **Over-Engineering**: Minimize unnecessary complexity and large class hierarchies
+
+### 3.2 Interactive & Iterative Development
 
 - **Keep It Manageable**: Break large tasks into smaller, manageable steps
-- **Request Small Steps**: Encourage breaking tasks into smaller changes, especially for refactoring
-- **Iterative Approach**: Encourage incremental changes for easier review and testing
+- **Encourage Small Changes**: Recommend smaller, focused changes rather than large refactors
+- **Iterative Approach**: Suggest incremental changes for easier review and testing
+- **Consolidate When Needed**: If generated code exceeds 20 lines, suggest consolidating for clarity
 
-### 5. **Error Identification & Suggestions**
+### 3.3 Test-Driven Development
 
-- **Highlight Code Smells**: Identify common code smells and request actionable solutions:
-  - **Mysterious Names**: Request descriptive naming suggestions
-  - **Duplicate Code**: Seek refactoring suggestions for shared functions
-  - **Long Functions**: Propose decomposition into smaller, single-responsibility functions
-  - **Large Files**: Propose logical splitting strategies
+- **Push for Testing**: Emphasize the importance of a strong test suite
+- **Test Examples**: Request examples of test cases when making significant changes
+- **Coverage Focus**: Encourage testing of critical components and services
+- **Refactoring Tests**: Ensure tests accompany refactoring changes
 
-### 6. **Test Integration**
+## 4. Interaction & Learning
 
-- **Push for Test-Driven Changes**: Emphasize the importance of a strong test suite; request examples of test cases when making significant code changes or refactoring
+### 4.1 Personalized Assistance
 
-### 7. **Documentation Standards**
-
-- **Table of Contents**: Always create or update a Table of Contents at the top of any generated or updated documentation
-- **Numeric Headings**: Follow numeric structure for headings and subheadings (e.g., `1. Section Title`, `1.1 Sub-section Title`)
-- **Comprehensive Style**: Provide thorough explanations that clarify purpose and usage rather than just descriptions of functionality
-- **Code Examples**: Include practical examples with clear context
-
-### 8. **Learning & Improvement**
-
-- **Foster Learning**: Provide references and documentation links for suggested practices
-- **Explain "Why"**: Focus on reasoning behind decisions, not just "what"
-- **Best Practices**: Share industry-standard approaches and patterns
-
-### 9. **Personalized Assistance**
-
-- **Customized Responses**: Adapt interactions based on individual project needs and context
-- **Question Encouragement**: Ask clarifying questions if the request seems ambiguous
+- **Customized Responses**: Adapt interactions based on project context and needs
+- **Ask Clarifying Questions**: Seek clarification when requests are ambiguous
 - **Proactive Suggestions**: Offer improvements beyond the immediate request
 - **Context-Aware**: Adapt responses based on project structure and current task
 
-### 10. **Performance Focus**
-
-- **Efficiency First**: Prioritize performance in algorithm and implementation suggestions
-- **Memory Management**: Consider memory implications of proposed solutions
-- **Parallelization Suggestions**: Seek opportunities for optimizing code through parallelization
-- **Optimization Opportunities**: Identify areas for performance improvements on Mac systems
-
-### 11. **Feedback & Iteration**
-
-- **Iterative Learning**: Adjust suggestions based on feedback to align with personal coding style
-- **Context Adjustment**: Adjust behavior based on coding context (TypeScript patterns in TypeScript projects)
-- **Continuous Improvement**: Refine approaches based on project evolution
-
-### 4. **Interactive Development**
-
-- **Keep It Manageable**: If generated code exceeds 20 lines, proactively suggest consolidating the code to maintain clarity while ensuring functionality.
-
-- **Keep It Manageable**: Break large tasks into smaller, manageable steps- **Request Small Steps**: Encourage the AI to break tasks into smaller, manageable changes, especially for refactoring processes.
-
-- **Iterative Approach**: Encourage incremental changes for easier review and testing
-
-- **Request Small Steps**: Split refactoring into focused, testable changes### 5. **Error Identification & Suggestions**
-
-### 5. **Error Identification & Solutions**- **Highlight Code Smells**: Identify common code smells and request actionable solutions:
-
-- **Mysterious Names**: Request descriptive naming suggestions.
-
-- **Highlight Code Smells**: Identify and suggest fixes for: - **Duplicate Code**: Seek refactoring suggestions for shared functions.
-
-  - **Mysterious Names**: Propose descriptive naming improvements - **Long Functions**: Propose decomposition into smaller, single-responsibility functions.
-
-  - **Duplicate Code**: Recommend extraction into shared utilities - Ensure aggressive suggestions on minimizing large classes and nested structures.
-
-  - **Long Functions**: Suggest decomposition into focused functions
-
-  - **Large Files**: Propose logical splitting strategies### 6. **Test Integration**
-
-### 6. **Documentation Standards**- **Push for Test-Driven Changes**: Emphasize the importance of a strong test suite; request examples of test cases when making significant code changes or refactoring.
-
-- **Table of Contents**: Always include TOC at the top of documentation### 7. **Documentation Standards**
-
-- **Numeric Headings**: Follow numeric structure (e.g., `1. Title`, `1.1 Subtitle`)
-
-- **Comprehensive Style**: Provide thorough explanations of purpose and usage- **Table of Contents**: Always create or update a Table of Contents at the top of any generated or updated documentation.
-
-- **Code Examples**: Include practical examples with clear context- **Numeric Headings**: Any documentation generated must follow a numeric structure for headings and subheadings (e.g., `1. Section Title`, `1.1 Sub-section Title`).
-
-- **Comprehensive Style**: Ensure documentation provides thorough explanations that clarify purpose and usage rather than just descriptions of functionality.
-
-### 7. **Learning & Improvement**
-
-### 8. **Learning & Improvement**
+### 4.2 Learning & Knowledge Sharing
 
 - **Foster Learning**: Provide references and documentation links
+- **Explain "Why"**: Focus on reasoning behind decisions, not just "what"
+- **Best Practices**: Share industry-standard approaches and patterns
+- **Continuous Education**: Help build understanding of architectural decisions
 
-- **Explain "Why"**: Focus on reasoning behind decisions, not just "what"- **Foster Learning**: Encourage the AI to provide references or documentation links for suggested practices, enabling further learning and understanding.
+### 4.3 Performance & Optimization
 
-- **Best Practices**: Share industry-standard approaches and patterns- **Suggest Documentation Styles**: Ask for clear explanations of code with a focus on "why" decisions are made.
-
-### 8. **Personalized Assistance**### 9. **Personalized Assistance**
-
-- **Context-Aware**: Adapt responses based on project structure and current task- **Customized Responses**: Adapt interactions based on individual project needs and context, not relying on generic responses.
-
-- **Ask Questions**: Seek clarification when requests are ambiguous- **Question Encouragement**: Prompt the AI to ask clarifying questions if the request seems ambiguous or could be interpreted in multiple ways.
-
-- **Proactive Suggestions**: Offer improvements beyond the immediate request
-
-### 10. **Performance Optimization Insights**
-
-### 9. **Performance Focus**
-
-- **Focus on Efficiency**: When discussing algorithms or functionalities, prioritize suggestions that enhance performance and memory use, particularly on Mac systems.
-
-- **Efficiency First**: Prioritize performance in algorithm and implementation suggestions- **Parallelization Suggestions**: Actively seek opportunities for optimizing code through parallelization without compromising clarity.
-
+- **Efficiency First**: Prioritize performance in algorithm suggestions
 - **Memory Management**: Consider memory implications of proposed solutions
+- **Parallelization**: Seek opportunities for optimizing through parallelization
+- **Mac-Specific**: Account for performance considerations on Mac systems
 
-- **Optimization Opportunities**: Identify areas for performance improvements### 11. **Feedback & Iteration**
+### 4.4 Feedback & Continuous Improvement
 
-### 10. **Feedback & Iteration**- **Iterative Learning**: Provide feedback on suggestions to refine future AI behavior and ensure it aligns with personal coding style and effectiveness.
-
-- **Behavior Adjustment**: Adjust the AI’s behavior based on coding context (e.g., prioritize Python tips when working in Python projects and TypeScript tips when in TypeScript).
-
-- **Iterative Learning**: Adjust suggestions based on feedback
+- **Iterative Learning**: Adjust suggestions based on feedback and coding style
 - **Context Adjustment**: Align behavior with current tech stack and patterns
 - **Continuous Improvement**: Refine approaches based on project evolution
+- **Pattern Recognition**: Learn and adapt to established project patterns
+
+## 5. Quality Assurance
+
+### 5.1 Code Review Standards
+
+1. Ensure code passes all build validation steps
+2. Verify TypeScript types are correct
+3. Check for proper error handling
+4. Confirm documentation is updated
+5. Validate performance implications
+6. Review for code smells and refactoring opportunities
+
+---
+
+**Remember**: These instructions prioritize build validation and code quality. Always refer to `.ai/rules/technical-architecture-rule.md` for specific technical patterns and specifications. Make every decision with full-stack thinking in mind.
